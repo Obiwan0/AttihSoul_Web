@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Run AttihSoul_Web",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+      "args": ["-m", "reflex", "run"],
+      "console": "integratedTerminal"
+    }
+  ]
+}
