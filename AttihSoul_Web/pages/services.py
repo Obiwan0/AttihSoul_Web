@@ -114,7 +114,8 @@ def services_page() -> rx.Component:
             ),
             position="relative",
             width="100%",
-            height="100vh",
+            height=bp(initial="90vh", md="100vh"),
+            min_height="500px",
             overflow="hidden",
         ),
 
@@ -135,7 +136,7 @@ def services_page() -> rx.Component:
                 spacing="4",
                 align_items="start",
             ),
-            padding="5rem 3rem",
+            padding=bp(initial="3rem 1.25rem", md="5rem 3rem"),
             background=DARK_BG,
         ),
 
@@ -191,7 +192,7 @@ def services_page() -> rx.Component:
                 spacing="4",
                 align_items="start",
             ),
-            padding="5rem 3rem",
+            padding=bp(initial="3rem 1.25rem", md="5rem 3rem"),
             background="#0f0f0f",
         ),
 
@@ -231,7 +232,7 @@ def services_page() -> rx.Component:
                 spacing="4",
                 align_items="start",
             ),
-            padding="5rem 3rem",
+            padding=bp(initial="3rem 1.25rem", md="5rem 3rem"),
             background=DARK_BG,
         ),
 
@@ -263,7 +264,7 @@ def services_page() -> rx.Component:
                 spacing="4",
                 align_items="start",
             ),
-            padding="5rem 3rem",
+            padding=bp(initial="3rem 1.25rem", md="5rem 3rem"),
             background="#0f0f0f",
         ),
 
@@ -280,18 +281,11 @@ def services_page() -> rx.Component:
                 spacing="3",
                 align="center",
             ),
-            padding="5rem 3rem",
+            padding=bp(initial="3rem 1.25rem", md="5rem 3rem"),
             background=DARK_BG,
             text_align="center",
         ),
 
         # FOOTER
-        rx.box(
-            rx.text("TWO SIDES. ONE VOICE.", color=TEXT_WHITE, font_size="0.75rem", letter_spacing="0.15em"),
-            padding="2rem",
-            text_align="center",
-            border_top="1px solid #222",
-            background=DARK_BG,
-        ),
         footer(),
     )

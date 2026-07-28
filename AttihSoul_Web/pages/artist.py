@@ -1,6 +1,10 @@
 import reflex as rx
+from ..state.settings_state import SettingsState
+from ..state.music_state import MusicState
+from ..state.gallery_state import GalleryState
 from .navbar import navbar
 from ..components.footer import footer
+from .helpers import youtube_thumbnail
 
 # =====================================================
 # CONSTANTS & DATA
@@ -12,22 +16,6 @@ TEXT_GRAY = "#a1a1a1"
 DARK_BG = "#0a0a0a"
 CARD_BG = "#111111"
 
-POPULAR_SONGS = [
-    ("All In My Head", "3:42", "https://open.spotify.com/track/0n4cGqDkot662pscOxLiCO?si=c836faa703ff4e01"),
-    ("Dreams", "4:01", "https://open.spotify.com/track/4Xgw3qk0ctc2Yl2r2gnPYD?si=0aac9856acb34ced"),
-    ("Good Old Days (Choir Version)", "3:53", "https://open.spotify.com/track/6Ovq5u4qsNonEno55WqL8P?si=fd6278a00f2a4a1d"),
-    ("Healed Too Much (Choir Version)", "2:57", "https://open.spotify.com/track/0E99JJDwsPGWjQ9cYQ0RKA?si=61c3c2c1f8c64414"),
-    ("Kiss Ya (Live at Estudio Tanger)", "3:30", "https://open.spotify.com/track/1AwyPRM4dRQR6V5ZvQJ0uR?si=10903aa18c744c9e"),
-    ("In the music", "3:18", "https://open.spotify.com/track/7Gaaqyq4OOK0c0uRE47bx1?si=a25739cda65348bf"),
-]
-
-YOUTUBE_VIDEOS = ["n70SRpi1yqQ",
-                  "_FMdyEiD0d4",
-                  "g0bGUmKtH6M",
-                  "Us7tmJA6nCA",
-                  "Rbhmcxowxqk",
-                  "gktCjHgb8qA",
-                  "3S-OZ9_6kgE"] # Add IDs here to auto-populate grid
 
 def bp(initial=None, sm=None, md=None, lg=None, xl=None):
     return rx.breakpoints(initial=initial, sm=sm, md=md, lg=lg, xl=xl)
@@ -48,9 +36,11 @@ def overlay(color: str):
 
 def social_icons():
     items = [
-        ("/instagram.svg", "https://instagram.com/attih_soul"),
-        ("/youtube.svg", "https://youtube.com/@attihsoul"),
-        ("/spotify.svg", "https://open.spotify.com/artist/5kL7MUEVmuucYk2LsJlrLC"),
+        ("/instagram.svg", SettingsState.settings.get("instagram", "https://instagram.com/attih_soul")),
+        ("/youtube.svg", SettingsState.settings.get("youtube", "https://youtube.com/@attihsoul")),
+        ("/spotify.svg", SettingsState.settings.get("spotify", "https://open.spotify.com/artist/5kL7MUEVmuucYk2LsJlrLC")),
+        ("/tiktok.svg", SettingsState.settings.get("tiktok", "https://www.tiktok.com/@attihsoul")),
+        ("/x.svg", SettingsState.settings.get("x", "https://x.com/attihsoul")),
     ]
     return rx.hstack(
         *[rx.link(rx.image(src=icon, width="22px", style={"filter": "brightness(0) invert(1)"}), href=url, is_external=True) for icon, url in items],
@@ -83,47 +73,20 @@ def music_card(title, year, img, link):
         href=link, is_external=True, text_decoration="none", width="100%",
     )
 
-def song_row(n, title, duration, link):
+def song_card_from_state(song: dict):
+    """Render a song from MusicState."""
     return rx.link(
         rx.hstack(
-            rx.text(str(n), width="35px", color=TEXT_GRAY, font_weight="500"),
-            rx.text(title, flex="1", color=TEXT_WHITE, font_weight="600"),
-            rx.text(duration, width="60px", color=TEXT_GRAY, text_align="right"),
-        ),
-        href=link, is_external=True, text_decoration="none", width="100%", padding="14px 18px", border_radius="4px", transition="all .25s ease",
-        _hover={"background": "#181818", "transform": "translateX(6px)", "borderLeft": f"3px solid {GOLD}"},
-    )
-
-def youtube_thumbnail(video_id: str):
-    return rx.dialog.root(
-        rx.dialog.trigger(
-            rx.box(
-                rx.image(
-                    src=f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg",
-                    width="100%", border_radius="12px", loading="lazy", transition="transform .35s ease",
-                    _hover={"transform": "scale(1.05)"},
-                ),
-                rx.center(
-                    rx.box(
-                        rx.icon("play", size=38, color="black"),
-                        width="72px", height="72px", background=GOLD, border_radius="50%", display="flex", align_items="center", justify_content="center", transition="all .35s ease",
-                        _hover={"transform": "scale(1.1)", "boxShadow": "0 0 45px rgba(212,168,90,.6)"},
-                    ),
-                    position="absolute", top="0", left="0", width="100%", height="100%",
-                ),
-                position="relative", cursor="pointer", overflow="hidden", border_radius="12px",
-            )
-        ),
-        rx.dialog.content(
-            rx.box(
-                rx.el.iframe(
-                    src=f"https://www.youtube.com/embed/{video_id}?autoplay=1",
-                    width="100%", height="100%", border="0", allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture", allow_full_screen=True,
-                ),
-                width="100%", style={"aspectRatio": "16 / 9"},
+            rx.text(song["title"], flex="1", color=TEXT_WHITE, font_weight="600"),
+            rx.hstack(
+                rx.cond(song["spotify"] != "", rx.text("Spotify", color=GOLD, font_size="0.8rem")),
+                rx.cond(song["youtube"] != "", rx.text("YouTube", color=GOLD, font_size="0.8rem")),
+                spacing="2",
             ),
-            max_width="1000px", padding="0", overflow="hidden", border_radius="12px", background="black",
         ),
+        href=rx.cond(song["spotify"] != "", song["spotify"], rx.cond(song["youtube"] != "", song["youtube"], "#")),
+        is_external=True, text_decoration="none", width="100%", padding="14px 18px", border_radius="4px", transition="all .25s ease",
+        _hover={"background": "#181818", "transform": "translateX(6px)", "borderLeft": f"3px solid {GOLD}"},
     )
 
 # =====================================================
@@ -154,7 +117,14 @@ def artist_page():
             rx.container(
                 rx.vstack(
                     rx.text("POPULAR SONGS", color=GOLD, font_weight="700", letter_spacing="2px"),
-                    *[song_row(i + 1, title, duration, link) for i, (title, duration, link) in enumerate(POPULAR_SONGS)],
+                    rx.cond(
+                        MusicState.songs.length() > 0,
+                        rx.vstack(
+                            rx.foreach(MusicState.songs, song_card_from_state),
+                            spacing="2", align="stretch", width="100%",
+                        ),
+                        rx.text("No songs yet. Add songs from the Admin Dashboard.", color=TEXT_GRAY, text_align="center"),
+                    ),
                     spacing="2", align="stretch", width="100%",
                 ),
                 max_width="1100px",
@@ -180,9 +150,37 @@ def artist_page():
                     rx.box(
                         rx.heading("Latest Visuals", color=TEXT_WHITE, size="5", width="100%", text_align=bp(initial="center", md="left")),
                         rx.text("Watch Attih Soul's latest official visuals and experience the music beyond audio.", color=TEXT_GRAY, max_width="650px", width="100%", text_align=bp(initial="center", md="left"), margin_bottom="2rem"),
-                        rx.grid(
-                            *[rx.box(youtube_thumbnail(video_id=video), width="100%", max_width="360px") for video in YOUTUBE_VIDEOS],
-                            columns=bp(initial="1", sm="2", md="3"), spacing="5", width="100%", justify_items="center",
+                        rx.cond(
+                            GalleryState.artist_videos.length() > 0,
+                            rx.grid(
+                                rx.foreach(
+                                    GalleryState.artist_videos,
+                                    lambda item: rx.box(
+                                        rx.cond(
+                                            item["media_type"] == "video",
+                                            rx.box(
+                                                youtube_thumbnail(item["src"]),
+                                                rx.box(
+                                                    rx.text(item["title"], color=TEXT_WHITE, font_weight="600", padding="1rem 0.5rem 0.5rem"),
+                                                ),
+                                                width="100%",
+                                                bg=CARD_BG,
+                                                border_radius="14px",
+                                                overflow="hidden",
+                                                _hover={
+                                                    "transform": "translateY(-6px)",
+                                                    "boxShadow": "0 15px 40px rgba(212,168,90,.18)",
+                                                },
+                                                transition="all .3s ease",
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                                columns=bp(initial="1", sm="2", md="3"),
+                                spacing="6",
+                                width="100%",
+                            ),
+                            rx.text("Music videos coming soon.", color=TEXT_GRAY),
                         ),
                         padding_top="5rem", width="100%",
                     ),
@@ -215,5 +213,6 @@ def artist_page():
         ),
         rx.divider(border_color="#222"),
         footer(),
-        bg=DARK_BG,
+        background=DARK_BG,
+        on_mount=[MusicState.load_songs, GalleryState.load_items, SettingsState.load_settings],
     )

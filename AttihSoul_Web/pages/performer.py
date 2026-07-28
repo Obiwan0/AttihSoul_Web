@@ -2,6 +2,8 @@ import reflex as rx
 from .navbar import navbar
 from ..components.footer import footer
 from ..state.review_state import ReviewState
+from ..state.gallery_state import GalleryState
+from ..state.settings_state import SettingsState
 from .helpers import (
     bp,
     GOLD,
@@ -14,61 +16,12 @@ from .helpers import (
     social_icons,
     brand_logo,
     gold_button,
+    youtube_thumbnail,
 )
-
-# =====================================================
-# DATA & CONSTANTS
-# =====================================================
-
-PERFORMANCE_VIDEOS = [
-    {"id": "sjXqnlwdAtI", "title": "Adapted String Band"},
-    {"id": "TCYKha5YPhw", "title": "Band Quartet"},
-    {"id": "sjXqnlwdAtI", "title": "Corporate Event"},
-    {"id": "Ndnwl7zmNgk", "title": "Trio"},
-    {"id": "fGS_y0w1kKg", "title": "DUO"},
-    {"id": "g0bGUmKtH6M", "title": "Private Gala"},
-    {"id": "LVjWiR6wQBY", "title": "Solo Acoustic"},
-]
 
 # =====================================================
 # COMPONENTS
 # =====================================================
-
-def youtube_thumbnail(video_id: str):
-    return rx.dialog.root(
-        rx.dialog.trigger(
-            rx.box(
-                rx.image(
-                    src=f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg",
-                    width="100%", border_radius="18px 18px 0 0", loading="lazy", transition="transform .35s ease",
-                    _hover={"transform": "scale(1.05)", "boxShadow": "0 20px 60px rgba(212,168,90,.25)"},
-                ),
-                rx.center(
-                    rx.box(
-                        rx.icon("play", size=38, color="black"),
-                        width="80px", height="80px", background=GOLD, border_radius="50%", 
-                        display="flex", align_items="center", justify_content="center", transition="all .35s ease",
-                        _hover={"transform": "scale(1.1)", "boxShadow": "0 0 45px rgba(212,168,90,.6)"},
-                    ),
-                    position="absolute", top="0", left="0", width="100%", height="100%",
-                ),
-                position="relative", cursor="pointer", overflow="hidden", border_radius="18px 18px 0 0",
-                transition="all .35s ease"
-            )
-        ),
-        rx.dialog.content(
-            rx.box(
-                rx.el.iframe(
-                    src=f"https://www.youtube.com/embed/{video_id}?autoplay=1",
-                    width="100%", height="100%", border="0", 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture", 
-                    allow_full_screen=True,
-                ),
-                width="100%", style={"aspectRatio": "16 / 9"},
-            ),
-            max_width="1000px", padding="0", overflow="hidden", border_radius="12px", background="black",
-        ),
-    )
 
 def review_card(review):
     return rx.box(
@@ -78,6 +31,60 @@ def review_card(review):
             spacing="3", align_items="start",
         ),
         bg=CARD_BG, padding="2rem", border_radius="14px", width="100%", border="1px solid rgba(212,175,55,.12)"
+    )
+
+def performance_card(item):
+    """Reusable card for a single performance video."""
+    return rx.box(
+        rx.cond(
+            item["media_type"] == "video",
+            rx.box(
+                youtube_thumbnail(item["src"]),
+                rx.box(
+                    rx.vstack(
+                        rx.text(item["title"], color=TEXT_WHITE, font_weight="600"),
+                        rx.link(
+                            rx.hstack(rx.icon("play", size=16), rx.text("Watch Performance"), spacing="2", color=GOLD),
+                            href=f"https://youtu.be/{item['src']}", is_external=True
+                        ),
+                        spacing="2", align_items="start"
+                    ),
+                    padding="1rem",
+                ),
+                background=CARD_BG,
+                border_radius="18px",
+                overflow="hidden",
+                _hover={
+                    "transform": "translateY(-8px)",
+                    "boxShadow": "0 20px 50px rgba(212,168,90,.18)",
+                },
+                transition="all .3s ease",
+            ),
+        ),
+    )
+
+def performance_gallery_section(heading_text: str, items_getter, padding):
+    """Render a section heading + grid of performance cards."""
+    return rx.box(
+        rx.container(
+            rx.vstack(
+                rx.heading(heading_text, color=TEXT_WHITE, size="5", width="100%", text_align="center"),
+                rx.cond(
+                    items_getter.length() > 0,
+                    rx.grid(
+                        rx.foreach(
+                            items_getter,
+                            lambda item: performance_card(item),
+                        ),
+                        columns=bp(initial="1", sm="2", md="3"), spacing="6", width="100%", justify_items="center",
+                    ),
+                    rx.text("No videos yet.", color=TEXT_GRAY, text_align="center"),
+                ),
+                spacing="5", align_items="center", width="100%",
+            ),
+            max_width="1200px",
+        ),
+        padding=padding, background="#0d0d0d",
     )
 
 def stat_box(number, title):
@@ -204,16 +211,16 @@ def performer_page():
             ),
             position="relative", height="95vh",
         ),
-        social_icons(),
+        rx.box(social_icons(SettingsState.settings), display=bp(initial="none", md="flex"), width="100%", justify="center"),
         rx.box(brand_logo(), padding_top="3rem", padding_bottom="5rem"),
         
         # STATS
         rx.box(
             rx.container(
                 rx.grid(
-                    stat_box("120+", "Live Performances"),
-                    stat_box("40+", "Private Events"),
-                    stat_box("6", "Countries"),
+                    stat_box("600+", "Live Performances"),
+                    stat_box("120+", "Private Events"),
+                    stat_box("19", "Countries"),
                     columns=bp(initial="1", sm="3"),
                     spacing="6",
                 ),
@@ -222,47 +229,25 @@ def performer_page():
             padding=section_padding, background=DARK_BG,
         ),
         
-        # PERFORMANCE GALLERY
+        # PERFORMANCE GALLERY — Solo Acoustic
         rx.box(
             rx.container(
                 rx.vstack(
                     rx.text("LIVE PERFORMANCE", color=GOLD, letter_spacing="2px"),
                     rx.heading("Live Performance Highlights", color=TEXT_WHITE, size="7"),
                     rx.text("Watch clips from past performances and experience the energy live.", color=TEXT_GRAY, max_width="650px", text_align="center", margin_bottom="2rem"),
-                    rx.grid(
-                        *[
-                            rx.box(
-                                youtube_thumbnail(video["id"]),
-                                rx.box(
-                                    rx.vstack(
-                                        rx.text(video["title"], color=TEXT_WHITE, font_weight="600"),
-                                        rx.link(
-                                            rx.hstack(rx.icon("play", size=16), rx.text("Watch Performance"), spacing="2", color=GOLD),
-                                            href=f"https://youtu.be/{video['id']}", is_external=True
-                                        ),
-                                        spacing="2", align_items="start"
-                                    ),
-                                    padding="1rem",
-                                ),
-                                background=CARD_BG,
-                                border_radius="18px",
-                                overflow="hidden",
-                                _hover={
-                                    "transform": "translateY(-8px)",
-                                    "boxShadow": "0 20px 50px rgba(212,168,90,.18)",
-                                },
-                                transition="all .3s ease",
-                            )
-                            for video in PERFORMANCE_VIDEOS
-                        ],
-                        columns=bp(initial="1", sm="2", md="3"), spacing="6", width="100%", justify_items="center",
-                    ),
                     spacing="5", align_items="center", width="100%",
                 ),
                 max_width="1200px",
             ),
             id="gallery", padding=section_padding, background="#0d0d0d",
         ),
+        performance_gallery_section("Solo Acoustic", GalleryState.solo_acoustic_videos, section_padding),
+        performance_gallery_section("Duo", GalleryState.duo_videos, section_padding),
+        performance_gallery_section("Trio", GalleryState.trio_videos, section_padding),
+        performance_gallery_section("Band Quartet", GalleryState.band_quartet_videos, section_padding),
+        performance_gallery_section("Adapted String Band", GalleryState.adapted_string_band_videos, section_padding),
+        
         
         # WHY CHOOSE
         rx.box(
@@ -338,7 +323,6 @@ def performer_page():
             padding=section_padding, background="#0d0d0d",
         ),
         
-        # TESTIMONIALS
         rx.box(
             rx.container(
                 rx.vstack(
@@ -357,5 +341,5 @@ def performer_page():
         ),
         footer(),
         background=DARK_BG,
-        on_mount=ReviewState.load_reviews,
+        on_mount=[ReviewState.load_reviews, GalleryState.load_items, SettingsState.load_settings],
     )

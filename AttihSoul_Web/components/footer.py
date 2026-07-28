@@ -1,4 +1,6 @@
 import reflex as rx
+from ..state.settings_state import SettingsState
+from ..pages.helpers import bp
 
 # =========================
 # COLORS
@@ -36,90 +38,80 @@ def footer():
 
             rx.vstack(
 
-                rx.hstack(
+            rx.grid(
 
-                    # ---------------------------
-                    # Brand
-                    # ---------------------------
+                # ---------------------------
+                # Brand
+                # ---------------------------
 
-                    rx.vstack(
+                rx.vstack(
 
-                        rx.heading(
-                            "AttihSoul",
-                            color=GOLD,
-                            size="6",
-                        ),
-
-                        rx.text(
-                            "Music that inspires. Performances that connect.",
-                            color=TEXT_LIGHT,
-                            max_width="280px",
-                        ),
-
-                        spacing="3",
-                        align_items="start",
+                    rx.heading(
+                        SettingsState.settings.get("hero_title", "AttihSoul"),
+                        color=GOLD,
+                        size="6",
                     ),
 
-                    rx.spacer(),
-
-                    # ---------------------------
-                    # Quick Links
-                    # ---------------------------
-
-                    rx.vstack(
-
-                        rx.heading(
-                            "Quick Links",
-                            size="4",
-                            color=TEXT,
-                        ),
-
-                        footer_link("Home", "/"),
-
-                        footer_link("Artists", "/artists"),
-
-                        footer_link("Albums", "/albums"),
-                        footer_link(
-                            "Playlists",
-                            "https://open.spotify.com/playlist/7JHI3s5MRSdEOyT5uFpFXt?si=tGjmAvQORmSqyms9P_qxqg",
-                        ),
-
-                        spacing="2",
-                        align_items="start",
+                    rx.text(
+                        SettingsState.settings.get("hero_subtitle", "Music that inspires. Performances that connect."),
+                        color=TEXT_LIGHT,
+                        max_width="280px",
                     ),
 
-                    rx.spacer(),
-
-                    # ---------------------------
-                    # Support
-                    # ---------------------------
-
-                    rx.vstack(
-
-                        rx.heading(
-                            "Support",
-                            size="4",
-                            color=TEXT,
-                        ),
-
-                        footer_link("Help Center"),
-
-                        footer_link("Privacy"),
-
-                        footer_link("Contact"),
-
-                        spacing="2",
-                        align_items="start",
-                    ),
-
+                    spacing="3",
+                    align_items=bp(initial="center", md="start"),
                     width="100%",
-                    align_items="start",
-
-                    flex_wrap="wrap",
-
-                    spacing="9",
-
                 ),
+
+                # ---------------------------
+                # Quick Links
+                # ---------------------------
+
+                rx.vstack(
+
+                    rx.heading(
+                        "Quick Links",
+                        size="4",
+                        color=TEXT,
+                    ),
+
+                    footer_link("Home", "/"),
+                    footer_link("Artist", "/artist"),
+                    footer_link("Performer", "/performer"),
+                    footer_link("Blog", "/blog"),
+
+                    spacing="2",
+                    align_items=bp(initial="center", md="start"),
+                    width="100%",
+                ),
+
+                # ---------------------------
+                # Connect
+                # ---------------------------
+
+                rx.vstack(
+
+                    rx.heading(
+                        "Connect",
+                        size="4",
+                        color=TEXT,
+                    ),
+
+                    footer_link("Instagram", SettingsState.settings.get("instagram", "https://instagram.com")),
+                    footer_link("YouTube", SettingsState.settings.get("youtube", "https://youtube.com")),
+                    footer_link("Spotify", SettingsState.settings.get("spotify", "https://open.spotify.com")),
+                    footer_link("Contact", "/contact"),
+
+                    spacing="2",
+                    align_items=bp(initial="center", md="start"),
+                    width="100%",
+                ),
+
+                columns=bp(initial="1", md="3"),
+                spacing="9",
+                width="100%",
+
+            ),
 
                 rx.divider(border_color=BORDER),
 
