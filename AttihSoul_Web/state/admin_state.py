@@ -1,10 +1,32 @@
 import reflex as rx
 
+ADMIN_PASSWORD = "BigCeasar2026#"
+
 
 class AdminState(rx.State):
-    """Controls navigation inside the admin dashboard."""
+    """Controls navigation and authentication inside the admin dashboard."""
 
     current_page: str = "dashboard"
+    password: str = ""
+    is_authenticated: bool = False
+
+    @rx.event
+    def set_password(self, value: str):
+        self.password = value
+
+    @rx.event
+    def login(self):
+        if self.password == ADMIN_PASSWORD:
+            self.is_authenticated = True
+            self.password = ""
+        else:
+            self.password = ""
+
+    @rx.event
+    def logout(self):
+        self.is_authenticated = False
+        self.current_page = "dashboard"
+        self.password = ""
 
     @rx.event
     def go_dashboard(self):
@@ -33,7 +55,3 @@ class AdminState(rx.State):
     @rx.event
     def go_settings(self):
         self.current_page = "settings"
-
-    @rx.event
-    def logout(self):
-        self.current_page = "dashboard"

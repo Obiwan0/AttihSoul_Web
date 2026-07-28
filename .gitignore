@@ -1,4 +1,5 @@
 *.db
+*.zip
 assets/external/
 __pycache__/
 .web

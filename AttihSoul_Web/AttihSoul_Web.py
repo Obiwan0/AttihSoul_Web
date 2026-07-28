@@ -5,12 +5,18 @@ from .pages.artist import artist_page
 from .pages.performer import performer_page
 from .pages.about import about_page
 from .pages.services import services_page
-from .pages.blog import blog_page   # ← NEW
+from .pages.blog import blog_page
 from .pages.admin import admin_page
 from .pages.contact import contact_page
 
-from .state.review_state import ReviewState
 from .state.blog_state import BlogState
+from .state.admin_state import AdminState
+from .state.music_state import MusicState
+from .state.gallery_state import GalleryState
+from .state.review_state import ReviewState
+from .state.booking_state import BookingState
+from .state.settings_state import SettingsState
+from .pages.navbar import NavbarState
 
 app = rx.App(
     style={
@@ -33,13 +39,11 @@ app.add_page(
     admin_page,
     route="/admin",
     title="Admin Dashboard",
-    on_load=ReviewState.load_reviews,
 )
 app.add_page(
     blog_page,
     route="/blog",
     title="Blog – Attih Soul",
-    on_load=BlogState.load_posts,
 )
 app.add_page(
     contact_page,

@@ -21,12 +21,15 @@ def blog_card(post):
 
         rx.vstack(
 
-            rx.image(
-                src="https://picsum.photos/600/350",
-                width="100%",
-                height="220px",
-                object_fit="cover",
-                border_radius="10px",
+            rx.cond(
+                post.get("featured_image"),
+                rx.image(
+                    src=post["featured_image"],
+                    width="100%",
+                    height="220px",
+                    object_fit="cover",
+                    border_radius="10px",
+                ),
             ),
 
             rx.heading(
@@ -144,12 +147,12 @@ def blog_page() -> rx.Component:
 
                 rx.cond(
 
-                    BlogState.posts.length() > 0,
+                    BlogState.published_posts.length() > 0,
 
                     rx.grid(
 
                         rx.foreach(
-                            BlogState.posts,
+                            BlogState.published_posts,
                             blog_card,
                         ),
 
@@ -221,4 +224,5 @@ def blog_page() -> rx.Component:
 
             background=DARK_BG,
         ),
+        on_mount=BlogState.load_posts,
     )

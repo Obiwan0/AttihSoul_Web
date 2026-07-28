@@ -1,4 +1,5 @@
 import reflex as rx
+from ..state.settings_state import SettingsState
 
 GOLD = "#d4a85a"
 
@@ -50,10 +51,10 @@ def social_icons() -> rx.Component:
                 is_external=True,
             )
             for icon, href in [
-                ("/instagram.svg","https://www.instagram.com/attih_soul/?igshid=YmMyMTA2M2Y%3D"),
-                ("/youtube.svg","https://www.youtube.com/channel/UC26rJ72ZSCYK8MfMt3FsFWg"),
-                ("/spotify.svg","https://open.spotify.com/artist/5kL7MUEVmuucYk2LsJlrLC?si=rJ-N8oSUQ02xEnMkfvJZ_w"),
-                ("/wikipedia.svg","https://en.wikipedia.org/wiki/Attih_Soul"),
+                ("/instagram.svg", SettingsState.settings.get("instagram", "https://www.instagram.com/attih_soul/")),
+                ("/youtube.svg", SettingsState.settings.get("youtube", "https://www.youtube.com/channel/UC26rJ72ZSCYK8MfMt3FsFWg")),
+                ("/spotify.svg", SettingsState.settings.get("spotify", "https://open.spotify.com/artist/5kL7MUEVmuucYk2LsJlrLC")),
+                ("/wikipedia.svg", SettingsState.settings.get("wikipedia", "https://en.wikipedia.org/wiki/Attih_Soul")),
             ]
         ],
         spacing="3",
@@ -161,4 +162,5 @@ def homepage() -> rx.Component:
         position="relative",
         overflow_x="hidden",
         background="black",
+        on_mount=SettingsState.load_settings,
     )

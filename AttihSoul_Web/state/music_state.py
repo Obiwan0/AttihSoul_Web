@@ -3,6 +3,9 @@ import sqlite3
 
 DB_NAME = "music.db"
 
+from ..database.music_dp import init_music_db
+init_music_db()
+
 
 class MusicState(rx.State):
 
@@ -11,42 +14,22 @@ class MusicState(rx.State):
     youtube: str = ""
     apple_music: str = ""
     cover: str = ""
+    editing_id: int | None = None
 
     songs: list[dict] = []
 
     @rx.event
     def load_songs(self):
         conn = sqlite3.connect(DB_NAME)
-
+        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-
         cursor.execute("""
-            SELECT
-                id,
-                title,
-                spotify,
-                youtube,
-                apple_music,
-                cover
+            SELECT id, title, spotify, youtube, apple_music, cover
             FROM songs
             ORDER BY id DESC
         """)
-
-        rows = cursor.fetchall()
-
+        self.songs = [dict(r) for r in cursor.fetchall()]
         conn.close()
-
-        self.songs = [
-            {
-                "id": row[0],
-                "title": row[1],
-                "spotify": row[2],
-                "youtube": row[3],
-                "apple_music": row[4],
-                "cover": row[5],
-            }
-            for row in rows
-        ]
 
     @rx.event
     def set_title(self, value: str):
@@ -70,39 +53,62 @@ class MusicState(rx.State):
 
     @rx.event
     def add_song(self):
-        print("ADDING SONG...")
-        print(self.title)
-
         conn = sqlite3.connect(DB_NAME)
         cursor = conn.cursor()
-
         cursor.execute(
-            """
-            INSERT INTO songs
-            (title, spotify, youtube, apple_music, cover)
-            VALUES (?, ?, ?, ?, ?)
-            """,
-            (
-                self.title,
-                self.spotify,
-                self.youtube,
-                self.apple_music,
-                self.cover,
-            ),
+            "INSERT INTO songs(title, spotify, youtube, apple_music, cover) VALUES (?, ?, ?, ?, ?)",
+            (self.title, self.spotify, self.youtube, self.apple_music, self.cover),
         )
-
         conn.commit()
-
-        print("Rows:", cursor.rowcount)
-
         conn.close()
-
         self.load_songs()
-
-        print("Songs loaded:", len(self.songs))
-
         self.title = ""
         self.spotify = ""
         self.youtube = ""
         self.apple_music = ""
         self.cover = ""
+
+    @rx.event
+    def start_edit(self, song_id: int):
+        self.editing_id = song_id
+        for song in self.songs:
+            if song["id"] == song_id:
+                self.title = song["title"]
+                self.spotify = song["spotify"]
+                self.youtube = song["youtube"]
+                self.apple_music = song["apple_music"]
+                self.cover = song["cover"]
+                break
+
+    @rx.event
+    def cancel_edit(self):
+        self.editing_id = None
+        self.title = ""
+        self.spotify = ""
+        self.youtube = ""
+        self.apple_music = ""
+        self.cover = ""
+
+    @rx.event
+    def save_edit(self):
+        if self.editing_id is None:
+            return
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE songs SET title=?, spotify=?, youtube=?, apple_music=?, cover=? WHERE id=?",
+            (self.title, self.spotify, self.youtube, self.apple_music, self.cover, self.editing_id),
+        )
+        conn.commit()
+        conn.close()
+        self.cancel_edit()
+        self.load_songs()
+
+    @rx.event
+    def delete_song(self, song_id: int):
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM songs WHERE id=?", (song_id,))
+        conn.commit()
+        conn.close()
+        self.load_songs()

@@ -1,4 +1,6 @@
 import reflex as rx
+from ..state.settings_state import SettingsState
+from ..state.booking_state import BookingState
 
 from .navbar import navbar
 from ..components.footer import footer
@@ -39,7 +41,7 @@ def contact_page() -> rx.Component:
                 rx.vstack(
 
                     rx.heading(
-                        "",
+                        "Get in Touch",
                         color="white",
                         font_weight="800",
                         text_align="center",
@@ -52,7 +54,7 @@ def contact_page() -> rx.Component:
                     ),
 
                     rx.text(
-                        "",
+                        "Let's make your event unforgettable.",
                         color="white",
                         text_align="center",
                         font_size={
@@ -101,74 +103,91 @@ def contact_page() -> rx.Component:
         # -------------------------
         rx.box(
 
-            rx.form(
+            rx.vstack(
 
-                rx.vstack(
-
-                    rx.heading(
-                        "Send a Booking Request",
-                        color=GOLD,
-                        text_align="center",
-                        font_size={
-                            "base": "1.6rem",
-                            "md": "2rem",
-                        },
-                        width="100%",
-                    ),
-
-                    rx.input(
-                        name="name",
-                        placeholder="Full Name",
-                        width="100%",
-                        size="3",
-                    ),
-
-                    rx.input(
-                        name="email",
-                        placeholder="Email Address",
-                        type="email",
-                        width="100%",
-                        size="3",
-                    ),
-
-                    rx.input(
-                        name="phone",
-                        placeholder="Phone Number",
-                        width="100%",
-                        size="3",
-                    ),
-
-                    rx.input(
-                        name="subject",
-                        placeholder="Subject",
-                        width="100%",
-                        size="3",
-                    ),
-
-                    rx.text_area(
-                        name="body",
-                        placeholder="Tell us about your event...",
-                        width="100%",
-                        min_height="180px",
-                    ),
-
-                    rx.button(
-                        "Send Booking Request",
-                        type="submit",
-                        background=GOLD,
-                        color="black",
-                        width="100%",
-                        size="3",
-                    ),
-
-                    spacing="5",
+                rx.heading(
+                    "Send a Booking Request",
+                    color=GOLD,
+                    text_align="center",
+                    font_size={
+                        "base": "1.6rem",
+                        "md": "2rem",
+                    },
                     width="100%",
                 ),
 
-                action="mailto:info@attihsoul.com",
-                method="post",
-                enc_type="text/plain",
+                rx.input(
+                    placeholder="Full Name",
+                    value=BookingState.name,
+                    on_change=BookingState.set_name,
+                    width="100%",
+                    size="3",
+                ),
 
+                rx.input(
+                    placeholder="Email Address",
+                    type="email",
+                    value=BookingState.email,
+                    on_change=BookingState.set_email,
+                    width="100%",
+                    size="3",
+                ),
+
+                rx.input(
+                    placeholder="Phone Number",
+                    value=BookingState.phone,
+                    on_change=BookingState.set_phone,
+                    width="100%",
+                    size="3",
+                ),
+
+                rx.input(
+                    placeholder="Event Type (e.g. Wedding, Concert, Corporate)",
+                    value=BookingState.event_type,
+                    on_change=BookingState.set_event_type,
+                    width="100%",
+                    size="3",
+                ),
+
+                rx.input(
+                    placeholder="Event Date",
+                    value=BookingState.event_date,
+                    on_change=BookingState.set_event_date,
+                    width="100%",
+                    size="3",
+                ),
+
+                rx.input(
+                    placeholder="Location",
+                    value=BookingState.location,
+                    on_change=BookingState.set_location,
+                    width="100%",
+                    size="3",
+                ),
+
+                rx.text_area(
+                    placeholder="Tell us about your event...",
+                    value=BookingState.message,
+                    on_change=BookingState.set_message,
+                    width="100%",
+                    min_height="180px",
+                ),
+
+                rx.button(
+                    "Send Booking Request",
+                    on_click=BookingState.submit_booking,
+                    background=GOLD,
+                    color="black",
+                    width="100%",
+                    size="3",
+                ),
+
+                rx.cond(
+                    BookingState.submitted,
+                    rx.text("Booking request sent successfully!", color="#4CAF50", font_weight="600"),
+                ),
+
+                spacing="5",
                 width="100%",
             ),
 
