@@ -341,5 +341,5 @@ def performer_page():
         ),
         footer(),
         background=DARK_BG,
-        on_mount=[ReviewState.load_reviews, GalleryState.load_items, SettingsState.load_settings],
+        on_mount=[ReviewState.load_reviews, GalleryState.on_load, SettingsState.load_settings],
     )

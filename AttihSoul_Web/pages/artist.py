@@ -214,5 +214,5 @@ def artist_page():
         rx.divider(border_color="#222"),
         footer(),
         background=DARK_BG,
-        on_mount=[MusicState.load_songs, GalleryState.load_items, SettingsState.load_settings],
+        on_mount=[MusicState.load_songs, GalleryState.on_load, SettingsState.load_settings],
     )

@@ -111,26 +111,30 @@ def brand_logo(title: str | None = None) -> rx.Component:
 
 # ============ YOUTUBE THUMBNAIL ============
 def youtube_thumbnail(video_id: str) -> rx.Component:
-    return rx.dialog.root(
-        rx.dialog.trigger(
-            rx.box(
-                rx.image(
-                    src=f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg",
-                    width="100%", border_radius="12px", loading="lazy", transition="transform .35s ease",
-                    _hover={"transform": "scale(1.05)"},
-                ),
-                rx.center(
-                    rx.box(
-                        rx.icon("play", size=38, color="black"),
-                        width="72px", height="72px", background=GOLD, border_radius="50%",
-                        display="flex", align_items="center", justify_content="center", transition="all .35s ease",
-                        _hover={"transform": "scale(1.1)", "boxShadow": "0 0 45px rgba(212,168,90,.6)"},
-                    ),
-                    position="absolute", top="0", left="0", width="100%", height="100%",
-                ),
-                position="relative", cursor="pointer", overflow="hidden", border_radius="12px",
-            )
+    from ..state.gallery_state import GalleryState
+
+    # Static thumbnail (image + play button overlay)
+    thumbnail = rx.box(
+        rx.image(
+            src=f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg",
+            width="100%", border_radius="12px", loading="lazy", transition="transform .35s ease",
+            _hover={"transform": "scale(1.05)"},
         ),
+        rx.center(
+            rx.box(
+                rx.icon("play", size=38, color="black"),
+                width="72px", height="72px", background=GOLD, border_radius="50%",
+                display="flex", align_items="center", justify_content="center", transition="all .35s ease",
+                _hover={"transform": "scale(1.1)", "boxShadow": "0 0 45px rgba(212,168,90,.6)"},
+            ),
+            position="absolute", top="0", left="0", width="100%", height="100%",
+        ),
+        position="relative", cursor="pointer", overflow="hidden", border_radius="12px",
+    )
+
+    # Full dialog (only rendered client-side after mount — guarded by rx.cond)
+    dialog = rx.dialog.root(
+        rx.dialog.trigger(thumbnail),
         rx.dialog.content(
             rx.box(
                 rx.el.iframe(
@@ -143,4 +147,10 @@ def youtube_thumbnail(video_id: str) -> rx.Component:
             ),
             max_width="1000px", padding="0", overflow="hidden", border_radius="12px", background="black",
         ),
+    )
+
+    return rx.cond(
+        GalleryState.is_mounted,
+        dialog,
+        thumbnail,
     )
