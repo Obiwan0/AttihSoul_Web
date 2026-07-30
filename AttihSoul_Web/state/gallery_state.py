@@ -4,33 +4,6 @@ import reflex as rx
 
 DB_NAME = "gallery.db"
 
-# Fallback sample videos used when the database is empty
-SAMPLE_VIDEOS = [
-    {"id": 0, "title": "All In My Head (Official Visualizer)", "media_type": "video", "src": "dQw4w9WgXcQ", "category": "music", "created_at": ""},
-    {"id": 0, "title": "Dreams (Choir Version)", "media_type": "video", "src": "jNQXAC9IVRw", "category": "music", "created_at": ""},
-    {"id": 0, "title": "Good Old Days", "media_type": "video", "src": "kJQP7kiw5Fk", "category": "music", "created_at": ""},
-    {"id": 0, "title": "Live Performance Highlights", "media_type": "video", "src": "9bZkp7q19f0", "category": "performance", "created_at": ""},
-]
-
-
-def init_db():
-    conn = sqlite3.connect(DB_NAME)
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS gallery_items(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT NOT NULL,
-            media_type TEXT NOT NULL DEFAULT 'image',
-            src TEXT NOT NULL,
-            category TEXT DEFAULT 'general',
-            created_at TEXT DEFAULT (datetime('now'))
-        )
-    """)
-    conn.commit()
-    conn.close()
-
-
-init_db()
-
 
 def extract_youtube_id(url_or_id: str) -> str:
     """Extract a YouTube video ID from a URL or return the input if it's already an ID."""
@@ -50,6 +23,76 @@ def extract_youtube_id(url_or_id: str) -> str:
             return match.group(1)
     # Return as-is if no pattern matches (might be a custom ID or image URL)
     return url_or_id.strip()
+
+
+# Default gallery items seeded on first run
+DEFAULT_GALLERY_ITEMS = [
+    # Artist Videos (latest_visuals)
+    {"title": "All In My Head (Official Visualizer)", "media_type": "video", "src": extract_youtube_id("https://youtu.be/n70SRpi1yqQ"), "category": "latest_visuals"},
+    {"title": "Dreams (Choir Version)", "media_type": "video", "src": extract_youtube_id("https://youtu.be/_FMdyEiD0d4"), "category": "latest_visuals"},
+    {"title": "Good Old Days", "media_type": "video", "src": extract_youtube_id("https://youtu.be/g0bGUmKtH6M"), "category": "latest_visuals"},
+    {"title": "Healed Too Much", "media_type": "video", "src": extract_youtube_id("https://youtu.be/Us7tmJA6nCA"), "category": "latest_visuals"},
+    {"title": "Kiss Ya (Live at Estudio Tanger)", "media_type": "video", "src": extract_youtube_id("https://youtu.be/Rbhmcxowxqk"), "category": "latest_visuals"},
+    {"title": "Shades of Emotions", "media_type": "video", "src": extract_youtube_id("https://youtu.be/gktCjHgb8qA"), "category": "latest_visuals"},
+    {"title": "The Acoustic Experiment", "media_type": "video", "src": extract_youtube_id("https://youtu.be/3S-OZ9_6kgE"), "category": "latest_visuals"},
+    # Solo Acoustic (solo_acoustic)
+    {"title": "Solo Acoustic Performance 1", "media_type": "video", "src": extract_youtube_id("https://youtu.be/LVjWiR6wQBY"), "category": "solo_acoustic"},
+    {"title": "Solo Acoustic Performance 2", "media_type": "video", "src": extract_youtube_id("https://youtu.be/vs2h3rUioLA"), "category": "solo_acoustic"},
+    {"title": "Solo Acoustic Performance 3", "media_type": "video", "src": extract_youtube_id("https://youtu.be/M-eVHHelKnA"), "category": "solo_acoustic"},
+    {"title": "Solo Acoustic Performance 4", "media_type": "video", "src": extract_youtube_id("https://youtu.be/YcJ62FDE9xE"), "category": "solo_acoustic"},
+    # Duo (duo)
+    {"title": "Duo Performance 1", "media_type": "video", "src": extract_youtube_id("https://youtu.be/fGS_y0w1kKg"), "category": "duo"},
+    {"title": "Duo Performance 2", "media_type": "video", "src": extract_youtube_id("https://youtu.be/0E3v0eyepQs"), "category": "duo"},
+    {"title": "Duo Performance 3", "media_type": "video", "src": extract_youtube_id("https://youtu.be/Rweeseb053E"), "category": "duo"},
+    # Trio (trio)
+    {"title": "Trio Performance 1", "media_type": "video", "src": extract_youtube_id("https://youtu.be/DGygpfx15U4"), "category": "trio"},
+    {"title": "Trio Performance 2", "media_type": "video", "src": extract_youtube_id("https://youtu.be/Ndnwl7zmNgk"), "category": "trio"},
+    {"title": "Trio Performance 3", "media_type": "video", "src": extract_youtube_id("https://youtu.be/A46g5r43BEs"), "category": "trio"},
+    {"title": "Trio Performance 4", "media_type": "video", "src": extract_youtube_id("https://youtu.be/8sae2Gie1ok"), "category": "trio"},
+    # Band Quartet (band_quartet)
+    {"title": "Band Quartet Performance 1", "media_type": "video", "src": extract_youtube_id("https://youtu.be/TCYKha5YPhw"), "category": "band_quartet"},
+    {"title": "Band Quartet Performance 2", "media_type": "video", "src": extract_youtube_id("https://youtu.be/r6cOjytq28M"), "category": "band_quartet"},
+    {"title": "Band Quartet Performance 3", "media_type": "video", "src": extract_youtube_id("https://youtu.be/Yq1nhNdrtig"), "category": "band_quartet"},
+    {"title": "Band Quartet Performance 4", "media_type": "video", "src": extract_youtube_id("https://youtu.be/wutbeR5NllM"), "category": "band_quartet"},
+    {"title": "Band Quartet Performance 5", "media_type": "video", "src": extract_youtube_id("https://youtu.be/BTGCpztYu-0"), "category": "band_quartet"},
+    {"title": "Band Quartet Performance 6", "media_type": "video", "src": extract_youtube_id("https://youtu.be/indPYTdCrw"), "category": "band_quartet"},
+    {"title": "Band Quartet Performance 7", "media_type": "video", "src": extract_youtube_id("https://youtu.be/UF5eVp_YHNA"), "category": "band_quartet"},
+    {"title": "Band Quartet Performance 8", "media_type": "video", "src": extract_youtube_id("https://youtu.be/LDIt022YMtE"), "category": "band_quartet"},
+    # Adapted String Band (adapted_string_band)
+    {"title": "Adapted String Band Performance 1", "media_type": "video", "src": extract_youtube_id("https://youtu.be/sjXqnlwdAtI"), "category": "adapted_string_band"},
+    {"title": "Adapted String Band Performance 2", "media_type": "video", "src": extract_youtube_id("https://youtu.be/uEceLymEHU0"), "category": "adapted_string_band"},
+    {"title": "Adapted String Band Performance 3", "media_type": "video", "src": extract_youtube_id("https://youtu.be/K_aORwN6h9E"), "category": "adapted_string_band"},
+    {"title": "Adapted String Band Performance 4", "media_type": "video", "src": extract_youtube_id("https://youtu.be/q3LV0uB2d-U"), "category": "adapted_string_band"},
+]
+
+
+def init_db():
+    conn = sqlite3.connect(DB_NAME)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS gallery_items(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            media_type TEXT NOT NULL DEFAULT 'image',
+            src TEXT NOT NULL,
+            category TEXT DEFAULT 'general',
+            created_at TEXT DEFAULT (datetime('now'))
+        )
+    """)
+    # Seed default items only when the table is empty
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM gallery_items")
+    count = cursor.fetchone()[0]
+    if count == 0:
+        for item in DEFAULT_GALLERY_ITEMS:
+            cursor.execute(
+                "INSERT INTO gallery_items(title, media_type, src, category) VALUES (?, ?, ?, ?)",
+                (item["title"], item["media_type"], item["src"], item["category"]),
+            )
+        conn.commit()
+    conn.close()
+
+
+init_db()
 
 
 class GalleryState(rx.State):
@@ -107,11 +150,7 @@ class GalleryState(rx.State):
         cur.execute("SELECT * FROM gallery_items ORDER BY id DESC")
         rows = [dict(r) for r in cur.fetchall()]
         conn.close()
-        # If database is empty, use sample videos as fallback
-        if not rows:
-            self.items = SAMPLE_VIDEOS
-        else:
-            self.items = rows
+        self.items = rows
 
     @rx.event
     def set_title(self, value: str):
