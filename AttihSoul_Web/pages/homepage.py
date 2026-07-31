@@ -67,7 +67,7 @@ def social_icons() -> rx.Component:
 def brand_logo() -> rx.Component:
     return rx.box(
         rx.text(
-            "AttihSoul",
+            "Attih Soul",
             font_size=bp(initial="1.8rem", md="4.5rem"),
             color=GOLD,
             font_style="italic",

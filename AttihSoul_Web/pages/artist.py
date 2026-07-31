@@ -102,7 +102,7 @@ def artist_page():
             overlay("rgba(0,0,0,.45)"),
             rx.center(
                 rx.vstack(
-                    rx.text("VERIFIED ARTIST", color=GOLD, text_align="center", letter_spacing="0.1em", font_size="0.9rem"),
+                    rx.text("ARTIST", color=GOLD, text_align="center", letter_spacing="0.1em", font_size="0.9rem"),
                     rx.heading("ATTIH SOUL", color="white", font_size=bp(initial="36px", md="5rem"), text_align="center", width="100%"),
                     rx.text("Step into the sound, the story, and the soul of Attih Soul.", color="white", text_align="center", max_width=bp(initial="300px", sm="340px", md="600px"), margin_x="auto"),
                     rx.center(gold_button("Explore Music", "#music"), width="100%"),
