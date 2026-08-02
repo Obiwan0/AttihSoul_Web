@@ -1,8 +1,11 @@
 import sqlite3
 import re
+from pathlib import Path
 import reflex as rx
 
-DB_NAME = "gallery.db"
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+DB_NAME = BASE_DIR / "database" / "gallery.db"
 
 
 def extract_youtube_id(url_or_id: str) -> str:
@@ -36,33 +39,33 @@ DEFAULT_GALLERY_ITEMS = [
     {"title": "Shades of Emotions", "media_type": "video", "src": extract_youtube_id("https://youtu.be/gktCjHgb8qA"), "category": "latest_visuals"},
     {"title": "The Acoustic Experiment", "media_type": "video", "src": extract_youtube_id("https://youtu.be/3S-OZ9_6kgE"), "category": "latest_visuals"},
     # Solo Acoustic (solo_acoustic)
-    {"title": "Solo Acoustic Performance 1", "media_type": "video", "src": extract_youtube_id("https://youtu.be/LVjWiR6wQBY"), "category": "solo_acoustic"},
-    {"title": "Solo Acoustic Performance 2", "media_type": "video", "src": extract_youtube_id("https://youtu.be/vs2h3rUioLA"), "category": "solo_acoustic"},
-    {"title": "Solo Acoustic Performance 3", "media_type": "video", "src": extract_youtube_id("https://youtu.be/M-eVHHelKnA"), "category": "solo_acoustic"},
-    {"title": "Solo Acoustic Performance 4", "media_type": "video", "src": extract_youtube_id("https://youtu.be/YcJ62FDE9xE"), "category": "solo_acoustic"},
+    {"title": "The Blower's Daughter", "media_type": "video", "src": extract_youtube_id("https://youtu.be/LVjWiR6wQBY"), "category": "solo_acoustic"},
+    {"title": "Hallelujah Live Acoustic", "media_type": "video", "src": extract_youtube_id("https://youtu.be/vs2h3rUioLA"), "category": "solo_acoustic"},
+    {"title": "Freya Ridings", "media_type": "video", "src": extract_youtube_id("https://youtu.be/M-eVHHelKnA"), "category": "solo_acoustic"},
+    {"title": "Monsters", "media_type": "video", "src": extract_youtube_id("https://youtu.be/YcJ62FDE9xE"), "category": "solo_acoustic"},
     # Duo (duo)
-    {"title": "Duo Performance 1", "media_type": "video", "src": extract_youtube_id("https://youtu.be/fGS_y0w1kKg"), "category": "duo"},
-    {"title": "Duo Performance 2", "media_type": "video", "src": extract_youtube_id("https://youtu.be/0E3v0eyepQs"), "category": "duo"},
-    {"title": "Duo Performance 3", "media_type": "video", "src": extract_youtube_id("https://youtu.be/Rweeseb053E"), "category": "duo"},
+    {"title": "Good Old Days", "media_type": "video", "src": extract_youtube_id("https://youtu.be/fGS_y0w1kKg"), "category": "duo"},
+    {"title": "My Idols Lied To Me", "media_type": "video", "src": extract_youtube_id("https://youtu.be/0E3v0eyepQs"), "category": "duo"},
+    {"title": "Say Something", "media_type": "video", "src": extract_youtube_id("https://youtu.be/Rweeseb053E"), "category": "duo"},
     # Trio (trio)
-    {"title": "Trio Performance 1", "media_type": "video", "src": extract_youtube_id("https://youtu.be/DGygpfx15U4"), "category": "trio"},
-    {"title": "Trio Performance 2", "media_type": "video", "src": extract_youtube_id("https://youtu.be/Ndnwl7zmNgk"), "category": "trio"},
-    {"title": "Trio Performance 3", "media_type": "video", "src": extract_youtube_id("https://youtu.be/A46g5r43BEs"), "category": "trio"},
-    {"title": "Trio Performance 4", "media_type": "video", "src": extract_youtube_id("https://youtu.be/8sae2Gie1ok"), "category": "trio"},
+    {"title": "Unaware", "media_type": "video", "src": extract_youtube_id("https://youtu.be/DGygpfx15U4"), "category": "trio"},
+    {"title": "Someday I'll find you", "media_type": "video", "src": extract_youtube_id("https://youtu.be/Ndnwl7zmNgk"), "category": "trio"},
+    {"title": " Free falling", "media_type": "video", "src": extract_youtube_id("https://youtu.be/A46g5r43BEs"), "category": "trio"},
+    {"title": "Down On My Knees (Live) ", "media_type": "video", "src": extract_youtube_id("https://youtu.be/8sae2Gie1ok"), "category": "trio"},
     # Band Quartet (band_quartet)
-    {"title": "Band Quartet Performance 1", "media_type": "video", "src": extract_youtube_id("https://youtu.be/TCYKha5YPhw"), "category": "band_quartet"},
-    {"title": "Band Quartet Performance 2", "media_type": "video", "src": extract_youtube_id("https://youtu.be/r6cOjytq28M"), "category": "band_quartet"},
-    {"title": "Band Quartet Performance 3", "media_type": "video", "src": extract_youtube_id("https://youtu.be/Yq1nhNdrtig"), "category": "band_quartet"},
-    {"title": "Band Quartet Performance 4", "media_type": "video", "src": extract_youtube_id("https://youtu.be/wutbeR5NllM"), "category": "band_quartet"},
-    {"title": "Band Quartet Performance 5", "media_type": "video", "src": extract_youtube_id("https://youtu.be/BTGCpztYu-0"), "category": "band_quartet"},
-    {"title": "Band Quartet Performance 6", "media_type": "video", "src": extract_youtube_id("https://youtu.be/indPYTdCrw"), "category": "band_quartet"},
-    {"title": "Band Quartet Performance 7", "media_type": "video", "src": extract_youtube_id("https://youtu.be/UF5eVp_YHNA"), "category": "band_quartet"},
-    {"title": "Band Quartet Performance 8", "media_type": "video", "src": extract_youtube_id("https://youtu.be/LDIt022YMtE"), "category": "band_quartet"},
+    {"title": "Colors ", "media_type": "video", "src": extract_youtube_id("https://youtu.be/TCYKha5YPhw"), "category": "band_quartet"},
+    {"title": "Killing Me Softly", "media_type": "video", "src": extract_youtube_id("https://youtu.be/r6cOjytq28M"), "category": "band_quartet"},
+    {"title": "Thinking Out Loud ", "media_type": "video", "src": extract_youtube_id("https://youtu.be/Yq1nhNdrtig"), "category": "band_quartet"},
+    {"title": "End Of The Road", "media_type": "video", "src": extract_youtube_id("https://youtu.be/wutbeR5NllM"), "category": "band_quartet"},
+    {"title": "I'd Rather Go Blind", "media_type": "video", "src": extract_youtube_id("https://youtu.be/BTGCpztYu-0"), "category": "band_quartet"},
+
+    {"title": "When A Man Loves A Woman", "media_type": "video", "src": extract_youtube_id("https://youtu.be/UF5eVp_YHNA"), "category": "band_quartet"},
+    {"title": "Mercy", "media_type": "video", "src": extract_youtube_id("https://youtu.be/LDIt022YMtE"), "category": "band_quartet"},
     # Adapted String Band (adapted_string_band)
-    {"title": "Adapted String Band Performance 1", "media_type": "video", "src": extract_youtube_id("https://youtu.be/sjXqnlwdAtI"), "category": "adapted_string_band"},
-    {"title": "Adapted String Band Performance 2", "media_type": "video", "src": extract_youtube_id("https://youtu.be/uEceLymEHU0"), "category": "adapted_string_band"},
-    {"title": "Adapted String Band Performance 3", "media_type": "video", "src": extract_youtube_id("https://youtu.be/K_aORwN6h9E"), "category": "adapted_string_band"},
-    {"title": "Adapted String Band Performance 4", "media_type": "video", "src": extract_youtube_id("https://youtu.be/q3LV0uB2d-U"), "category": "adapted_string_band"},
+    {"title": "Lose Control", "media_type": "video", "src": extract_youtube_id("https://youtu.be/sjXqnlwdAtI"), "category": "adapted_string_band"},
+    {"title": "Unchained Melody (Soulful String Version)", "media_type": "video", "src": extract_youtube_id("https://youtu.be/uEceLymEHU0"), "category": "adapted_string_band"},
+    {"title": "Locked Out Of Heaven - Bruno Mars (String Cover By Attih Soul)", "media_type": "video", "src": extract_youtube_id("https://youtu.be/K_aORwN6h9E"), "category": "adapted_string_band"},
+    {"title": "Feeling Good", "media_type": "video", "src": extract_youtube_id("https://youtu.be/q3LV0uB2d-U"), "category": "adapted_string_band"},
 ]
 
 

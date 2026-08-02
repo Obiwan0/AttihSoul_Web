@@ -167,7 +167,7 @@ def performer_page():
                         line_height="1.1",
                         text_align="center"
                     ),
-                    rx.text("Soul • Jazz • Afro • Acoustic", color=GOLD, font_size=bp(initial="0.9rem", md="1rem"), letter_spacing="4px"),
+                    rx.text("Soul • Jazz • Funk • Acoustic", color=GOLD, font_size=bp(initial="0.9rem", md="1rem"), letter_spacing="4px"),
                     rx.text("From intimate weddings to international stages, every performance is crafted to leave a lasting memory.", color=TEXT_GRAY, width="100%", max_width="720px", padding_x=bp(initial="1rem", md="0"), text_align="center"),
                     
                     # Single Hero CTA
@@ -312,7 +312,7 @@ def performer_page():
             rx.container(
                 rx.vstack(
                     rx.heading("Share Your Experience", color=TEXT_WHITE, font_size="2rem"),
-                    rx.text("Every review is manually approved before appearing publicly.", color=TEXT_GRAY, max_width="650px", text_align="center"),
+                    rx.text(".", color=TEXT_GRAY, max_width="650px", text_align="center"),
                     rx.input(placeholder="Your Name", value=ReviewState.name, on_change=ReviewState.set_name, width="100%", bg="#181818", border="1px solid rgba(212,175,55,.15)", color=TEXT_WHITE),
                     rx.text_area(placeholder="Tell everyone about your experience...", value=ReviewState.review, on_change=ReviewState.set_review, width="100%", min_height="180px", bg="#181818", border="1px solid rgba(212,175,55,.15)", color=TEXT_WHITE),
                     rx.button("Submit Review", on_click=ReviewState.submit_review, background=GOLD, color="black", width=bp(initial="100%", sm="220px"), border_radius="9999px"),

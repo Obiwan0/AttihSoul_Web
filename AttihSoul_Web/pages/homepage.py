@@ -138,8 +138,8 @@ def side_panel(title, subtitle, video_src, href, dark):
 def homepage() -> rx.Component:
     return rx.box(
         rx.flex(
-            side_panel("THE ARTIST","discover Attih Soul's original music, stream and concerts and festival bookings","/artist_bg.mp4","/artist","rgba(0,0,0,0.45)"),
-            side_panel("THE PERFORMER","book Attih Soul for weddings, corporate and private events, parties, shows, galas and to watch Videos from events.","/performer_bg.mp4","/performer","rgba(0,0,0,0.35)"),
+            side_panel("THE ARTIST","Discover original music,latest releases,bookings for live concerts,festival performances","/artist_bg.mp4","/artist","rgba(0,0,0,0.45)"),
+            side_panel("THE PERFORMER","Book for weddings,corporate events,private celebrations,galas,luxury entertainment","/performer_bg.mp4","/performer","rgba(0,0,0,0.35)"),
             direction=bp(initial="column", md="row"),
             width="100%",
             min_height="100vh",
@@ -148,7 +148,7 @@ def homepage() -> rx.Component:
         brand_logo(),
         rx.box(center_badge(), display=bp(initial="none", md="block")),
         rx.box(
-            rx.text("TWO SIDES. ONE VOICE.", color="white", font_size=bp(initial="10px", md="1rem"),
+            rx.text("TWO SIDES, ONE VOICE.", color="white", font_size=bp(initial="10px", md="1rem"),
                     font_weight="600", letter_spacing="0.15em"),
             position="absolute",
             bottom=bp(initial="8px", md="2rem"),

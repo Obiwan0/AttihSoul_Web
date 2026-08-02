@@ -1,7 +1,10 @@
 import sqlite3
+from pathlib import Path
 import reflex as rx
 
-DB_NAME = "blog.db"
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+DB_NAME = BASE_DIR / "database" / "blog.db"
 
 
 # Canonical schema for the blog_posts table (order matters for CREATE TABLE).

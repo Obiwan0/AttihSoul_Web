@@ -1,7 +1,10 @@
 import reflex as rx
 import sqlite3
+from pathlib import Path
 
-DB_NAME = "music.db"
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+DB_NAME = BASE_DIR / "database" / "music.db"
 
 from ..database.music_dp import init_music_db
 init_music_db()
