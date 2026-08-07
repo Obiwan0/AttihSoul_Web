@@ -1,17 +1,14 @@
-import sqlite3
-from pathlib import Path
 import reflex as rx
+from psycopg.rows import dict_row
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-DB_NAME = BASE_DIR / "database" / "reviews.db"
+from ..database.postgres import get_connection
 
 
 def init_db():
-    conn = sqlite3.connect(DB_NAME)
+    conn = get_connection()
     conn.execute("""
     CREATE TABLE IF NOT EXISTS reviews(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         name TEXT,
         review TEXT,
         status TEXT DEFAULT 'pending'
@@ -25,8 +22,7 @@ init_db()
 
 
 def get_db():
-    conn = sqlite3.connect(DB_NAME)
-    conn.row_factory = sqlite3.Row
+    conn = get_connection()
     return conn
 
 
@@ -51,7 +47,7 @@ class ReviewState(rx.State):
     @rx.event
     def load_reviews(self):
         conn = get_db()
-        cur = conn.cursor()
+        cur = conn.cursor(row_factory=dict_row)
         cur.execute("SELECT id, name, review, status FROM reviews ORDER BY id DESC")
         self.reviews = [dict(r) for r in cur.fetchall()]
         conn.close()
@@ -61,7 +57,7 @@ class ReviewState(rx.State):
         if not self.name.strip() or not self.review.strip():
             return
         conn = get_db()
-        conn.execute("INSERT INTO reviews(name, review, status) VALUES(?, ?, 'pending')",
+        conn.execute("INSERT INTO reviews(name, review, status) VALUES(%s, %s, 'pending')",
                      (self.name.strip(), self.review.strip()))
         conn.commit()
         conn.close()
@@ -71,7 +67,7 @@ class ReviewState(rx.State):
     @rx.event
     def approve_review(self, review_id: int):
         conn = get_db()
-        conn.execute("UPDATE reviews SET status='approved' WHERE id=?", (review_id,))
+        conn.execute("UPDATE reviews SET status='approved' WHERE id=%s", (review_id,))
         conn.commit()
         conn.close()
         self.load_reviews()
@@ -79,7 +75,7 @@ class ReviewState(rx.State):
     @rx.event
     def reject_review(self, review_id: int):
         conn = get_db()
-        conn.execute("UPDATE reviews SET status='rejected' WHERE id=?", (review_id,))
+        conn.execute("UPDATE reviews SET status='rejected' WHERE id=%s", (review_id,))
         conn.commit()
         conn.close()
         self.load_reviews()
@@ -87,7 +83,7 @@ class ReviewState(rx.State):
     @rx.event
     def delete_review(self, review_id: int):
         conn = get_db()
-        conn.execute("DELETE FROM reviews WHERE id=?", (review_id,))
+        conn.execute("DELETE FROM reviews WHERE id=%s", (review_id,))
         conn.commit()
         conn.close()
         self.load_reviews()

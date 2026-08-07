@@ -53,48 +53,36 @@ def contact_page() -> rx.Component:
                         width="100%",
                     ),
 
-                    rx.text(
-                        "Let's make your event unforgettable.",
-                        color="white",
-                        text_align="center",
-                        font_size={
-                            "base": "0.9rem",
-                            "md": "1.15rem",
-                        },
-                        max_width={
-                            "base": "85%",
-                            "md": "500px",
-                        },
-                        margin="0 auto",
-                        line_height="1.5",
-                    ),
-
                     spacing="3",
-                    align_items="center",
-                    justify_content="center",
                     width="100%",
                     padding_x={
                         "base": "1.5rem",
                         "md": "1rem",
                     },
-                    height="100%",
-                    display="flex",
-                    flex_direction="column",
                 ),
 
                 width="100%",
                 height="100%",
-                position="relative",
+                display="flex",
+                align_items="center",
+                justify_content="center",
+                position="absolute",
+                top="0",
+                left="0",
                 z_index="10",
             ),
 
             position="relative",
             width="100%",
             height={
-                "base": "55vh",
+                "base": "70vh",
                 "md": "60vh",
             },
             min_height="320px",
+            margin_top={
+                "base": "5rem",
+                "md": "0",
+            },
             overflow="hidden",
         ),
 

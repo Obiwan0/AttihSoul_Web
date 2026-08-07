@@ -1,17 +1,14 @@
-import sqlite3
-from pathlib import Path
 import reflex as rx
+from psycopg.rows import dict_row
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-DB_NAME = BASE_DIR / "database" / "bookings.db"
+from ..database.postgres import get_connection
 
 
 def init_db():
-    conn = sqlite3.connect(DB_NAME)
+    conn = get_connection()
     conn.execute("""
         CREATE TABLE IF NOT EXISTS bookings(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             name TEXT NOT NULL,
             email TEXT NOT NULL,
             phone TEXT,
@@ -20,7 +17,7 @@ def init_db():
             location TEXT,
             message TEXT,
             status TEXT DEFAULT 'pending',
-            created_at TEXT DEFAULT (datetime('now'))
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
     conn.commit()
@@ -88,9 +85,8 @@ class BookingState(rx.State):
 
     @rx.event
     def load_bookings(self):
-        conn = sqlite3.connect(DB_NAME)
-        conn.row_factory = sqlite3.Row
-        cur = conn.cursor()
+        conn = get_connection()
+        cur = conn.cursor(row_factory=dict_row)
         cur.execute("SELECT * FROM bookings ORDER BY id DESC")
         self.bookings = [dict(r) for r in cur.fetchall()]
         conn.close()
@@ -99,10 +95,10 @@ class BookingState(rx.State):
     def submit_booking(self):
         if not self.name.strip() or not self.email.strip():
             return
-        conn = sqlite3.connect(DB_NAME)
+        conn = get_connection()
         conn.execute(
             """INSERT INTO bookings(name, email, phone, event_type, event_date, location, message, status)
-               VALUES(?, ?, ?, ?, ?, ?, ?, 'pending')""",
+               VALUES(%s, %s, %s, %s, %s, %s, %s, 'pending')""",
             (
                 self.name.strip(),
                 self.email.strip(),
@@ -127,24 +123,24 @@ class BookingState(rx.State):
 
     @rx.event
     def approve_booking(self, booking_id: int):
-        conn = sqlite3.connect(DB_NAME)
-        conn.execute("UPDATE bookings SET status='approved' WHERE id=?", (booking_id,))
+        conn = get_connection()
+        conn.execute("UPDATE bookings SET status='approved' WHERE id=%s", (booking_id,))
         conn.commit()
         conn.close()
         self.load_bookings()
 
     @rx.event
     def reject_booking(self, booking_id: int):
-        conn = sqlite3.connect(DB_NAME)
-        conn.execute("UPDATE bookings SET status='rejected' WHERE id=?", (booking_id,))
+        conn = get_connection()
+        conn.execute("UPDATE bookings SET status='rejected' WHERE id=%s", (booking_id,))
         conn.commit()
         conn.close()
         self.load_bookings()
 
     @rx.event
     def delete_booking(self, booking_id: int):
-        conn = sqlite3.connect(DB_NAME)
-        conn.execute("DELETE FROM bookings WHERE id=?", (booking_id,))
+        conn = get_connection()
+        conn.execute("DELETE FROM bookings WHERE id=%s", (booking_id,))
         conn.commit()
         conn.close()
         self.load_bookings()

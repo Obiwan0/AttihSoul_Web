@@ -1,9 +1,4 @@
-import sqlite3
-from pathlib import Path
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-DB_NAME = BASE_DIR / "database" / "music.db"
+from .postgres import get_connection
 
 DEFAULT_SONGS = [
     {
@@ -52,11 +47,11 @@ DEFAULT_SONGS = [
 
 
 def init_music_db():
-    conn = sqlite3.connect(DB_NAME)
+    conn = get_connection()
 
     conn.execute("""
         CREATE TABLE IF NOT EXISTS songs(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             title TEXT NOT NULL,
             spotify TEXT,
             youtube TEXT,
@@ -72,7 +67,7 @@ def init_music_db():
     if count == 0:
         for song in DEFAULT_SONGS:
             cursor.execute(
-                "INSERT INTO songs(title, spotify, youtube, apple_music, cover) VALUES (?, ?, ?, ?, ?)",
+                "INSERT INTO songs(title, spotify, youtube, apple_music, cover) VALUES (%s, %s, %s, %s, %s)",
                 (song["title"], song["spotify"], song["youtube"], song["apple_music"], song["cover"]),
             )
         conn.commit()

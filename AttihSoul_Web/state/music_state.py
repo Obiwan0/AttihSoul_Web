@@ -1,12 +1,9 @@
 import reflex as rx
-import sqlite3
-from pathlib import Path
+from psycopg.rows import dict_row
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-DB_NAME = BASE_DIR / "database" / "music.db"
-
+from ..database.postgres import get_connection
 from ..database.music_dp import init_music_db
+
 init_music_db()
 
 
@@ -23,15 +20,14 @@ class MusicState(rx.State):
 
     @rx.event
     def load_songs(self):
-        conn = sqlite3.connect(DB_NAME)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute("""
+        conn = get_connection()
+        cur = conn.cursor(row_factory=dict_row)
+        cur.execute("""
             SELECT id, title, spotify, youtube, apple_music, cover
             FROM songs
             ORDER BY id DESC
         """)
-        self.songs = [dict(r) for r in cursor.fetchall()]
+        self.songs = [dict(r) for r in cur.fetchall()]
         conn.close()
 
     @rx.event
@@ -56,10 +52,10 @@ class MusicState(rx.State):
 
     @rx.event
     def add_song(self):
-        conn = sqlite3.connect(DB_NAME)
+        conn = get_connection()
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO songs(title, spotify, youtube, apple_music, cover) VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO songs(title, spotify, youtube, apple_music, cover) VALUES (%s, %s, %s, %s, %s)",
             (self.title, self.spotify, self.youtube, self.apple_music, self.cover),
         )
         conn.commit()
@@ -96,10 +92,10 @@ class MusicState(rx.State):
     def save_edit(self):
         if self.editing_id is None:
             return
-        conn = sqlite3.connect(DB_NAME)
+        conn = get_connection()
         cursor = conn.cursor()
         cursor.execute(
-            "UPDATE songs SET title=?, spotify=?, youtube=?, apple_music=?, cover=? WHERE id=?",
+            "UPDATE songs SET title=%s, spotify=%s, youtube=%s, apple_music=%s, cover=%s WHERE id=%s",
             (self.title, self.spotify, self.youtube, self.apple_music, self.cover, self.editing_id),
         )
         conn.commit()
@@ -109,9 +105,9 @@ class MusicState(rx.State):
 
     @rx.event
     def delete_song(self, song_id: int):
-        conn = sqlite3.connect(DB_NAME)
+        conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM songs WHERE id=?", (song_id,))
+        cursor.execute("DELETE FROM songs WHERE id=%s", (song_id,))
         conn.commit()
         conn.close()
         self.load_songs()

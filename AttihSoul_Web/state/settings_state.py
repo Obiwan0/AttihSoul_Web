@@ -1,14 +1,11 @@
-import sqlite3
-from pathlib import Path
 import reflex as rx
+from psycopg.rows import dict_row
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-DB_NAME = BASE_DIR / "database" / "settings.db"
+from ..database.postgres import get_connection
 
 
 def init_db():
-    conn = sqlite3.connect(DB_NAME)
+    conn = get_connection()
     conn.execute("""
         CREATE TABLE IF NOT EXISTS settings(
             key TEXT PRIMARY KEY,
@@ -33,7 +30,7 @@ def init_db():
     }
     for k, v in defaults.items():
         conn.execute(
-            "INSERT OR IGNORE INTO settings(key, value) VALUES(?, ?)", (k, v)
+            "INSERT INTO settings(key, value) VALUES(%s, %s) ON CONFLICT (key) DO NOTHING", (k, v)
         )
     conn.commit()
     conn.close()
@@ -65,9 +62,8 @@ class SettingsState(rx.State):
 
     @rx.event
     def load_settings(self):
-        conn = sqlite3.connect(DB_NAME)
-        conn.row_factory = sqlite3.Row
-        cur = conn.cursor()
+        conn = get_connection()
+        cur = conn.cursor(row_factory=dict_row)
         cur.execute("SELECT key, value FROM settings")
         rows = cur.fetchall()
         conn.close()
@@ -86,9 +82,10 @@ class SettingsState(rx.State):
         self.seo_keywords = self.settings.get("seo_keywords", "")
 
     def _save_setting(self, key: str, value: str):
-        conn = sqlite3.connect(DB_NAME)
+        conn = get_connection()
         conn.execute(
-            "INSERT OR REPLACE INTO settings(key, value) VALUES(?, ?)", (key, value)
+            "INSERT INTO settings(key, value) VALUES(%s, %s) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value",
+            (key, value),
         )
         conn.commit()
         conn.close()

@@ -111,17 +111,38 @@ def explore_button(text, href):
         text_decoration="none",
     )
 
-def side_panel(title, subtitle, video_src, href, dark):
+def side_panel(title, top_icon, label, features, button_text, video_src, href, dark):
     return rx.box(
         video_bg(video_src),
         overlay(dark),
         rx.center(
             rx.vstack(
                 rx.heading(title, color="white", font_size=bp(initial="24px", md="4rem"), text_align="center"),
-                rx.divider(border_color=GOLD, width="60%"),
-                rx.text(subtitle, color="white", text_align="center"),
-                explore_button("Explore Now", href),
-                spacing="3",
+                rx.icon(top_icon, size=32, color=GOLD),
+                rx.text(
+                    label,
+                    color="white",
+                    font_family="Georgia, serif",
+                    font_size=bp(initial="10px", md="14px"),
+                    letter_spacing="2px",
+                    text_align="center",
+                ),
+                rx.divider(border_color=GOLD, width="42%"),
+                rx.vstack(
+                    *[
+                        rx.hstack(
+                            rx.icon(icon, size=20, color=GOLD),
+                            rx.text(text, color="white", font_size=bp(initial="13px", md="16px")),
+                            spacing="2",
+                            align_items="center",
+                        )
+                        for icon, text in features
+                    ],
+                    spacing="2",
+                    align="center",
+                ),
+                explore_button(button_text, href),
+                spacing="4",
                 align="center",
             ),
             width="100%",
@@ -138,8 +159,26 @@ def side_panel(title, subtitle, video_src, href, dark):
 def homepage() -> rx.Component:
     return rx.box(
         rx.flex(
-            side_panel("THE ARTIST","Discover original music,latest releases,bookings for live concerts,festival performances","/artist_bg.mp4","/artist","rgba(0,0,0,0.45)"),
-            side_panel("THE PERFORMER","Book for weddings,corporate events,private celebrations,galas,luxury entertainment","/performer_bg.mp4","/performer","rgba(0,0,0,0.35)"),
+            side_panel(
+                "THE ARTIST",
+                "music",
+                "ORIGINAL MUSIC",
+                [("music", "Original Songs"), ("play", "Music Videos"), ("ticket", "Live Shows")],
+                "LISTEN & DISCOVER",
+                "/artist_bg.mp4",
+                "/artist",
+                "rgba(0,0,0,0.45)",
+            ),
+            side_panel(
+                "THE PERFORMER",
+                "mic",
+                "LIVE PERFORMANCES",
+                [("heart", "Weddings"), ("building", "Corporate Events"), ("sparkles", "Private Events")],
+                "BOOK LIVE MUSIC",
+                "/performer_bg.mp4",
+                "/performer",
+                "rgba(0,0,0,0.35)",
+            ),
             direction=bp(initial="column", md="row"),
             width="100%",
             min_height="100vh",

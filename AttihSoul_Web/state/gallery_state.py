@@ -1,11 +1,9 @@
-import sqlite3
 import re
-from pathlib import Path
+
 import reflex as rx
+from psycopg.rows import dict_row
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-DB_NAME = BASE_DIR / "database" / "gallery.db"
+from ..database.postgres import get_connection
 
 
 def extract_youtube_id(url_or_id: str) -> str:
@@ -31,13 +29,13 @@ def extract_youtube_id(url_or_id: str) -> str:
 # Default gallery items seeded on first run
 DEFAULT_GALLERY_ITEMS = [
     # Artist Videos (latest_visuals)
-    {"title": "All In My Head (Official Visualizer)", "media_type": "video", "src": extract_youtube_id("https://youtu.be/n70SRpi1yqQ"), "category": "latest_visuals"},
-    {"title": "Dreams (Choir Version)", "media_type": "video", "src": extract_youtube_id("https://youtu.be/_FMdyEiD0d4"), "category": "latest_visuals"},
-    {"title": "Good Old Days", "media_type": "video", "src": extract_youtube_id("https://youtu.be/g0bGUmKtH6M"), "category": "latest_visuals"},
-    {"title": "Healed Too Much", "media_type": "video", "src": extract_youtube_id("https://youtu.be/Us7tmJA6nCA"), "category": "latest_visuals"},
-    {"title": "Kiss Ya (Live at Estudio Tanger)", "media_type": "video", "src": extract_youtube_id("https://youtu.be/Rbhmcxowxqk"), "category": "latest_visuals"},
-    {"title": "Shades of Emotions", "media_type": "video", "src": extract_youtube_id("https://youtu.be/gktCjHgb8qA"), "category": "latest_visuals"},
-    {"title": "The Acoustic Experiment", "media_type": "video", "src": extract_youtube_id("https://youtu.be/3S-OZ9_6kgE"), "category": "latest_visuals"},
+    {"title": "Kiss Ya (Live)", "media_type": "video", "src": extract_youtube_id("https://youtu.be/n70SRpi1yqQ"), "category": "latest_visuals"},
+    {"title": "Karma  (AcousticVersion)", "media_type": "video", "src": extract_youtube_id("https://youtu.be/_FMdyEiD0d4"), "category": "latest_visuals"},
+    {"title": "Friend zone Acoustic version", "media_type": "video", "src": extract_youtube_id("https://youtu.be/g0bGUmKtH6M"), "category": "latest_visuals"},
+    {"title": "Scared Attih Soul of Beautiful Acoustic Version", "media_type": "video", "src": extract_youtube_id("https://youtu.be/Us7tmJA6nCA"), "category": "latest_visuals"},
+    {"title": "Some day I'll find you(Acoustic Version)", "media_type": "video", "src": extract_youtube_id("https://youtu.be/Rbhmcxowxqk"), "category": "latest_visuals"},
+    {"title": "Some day I'll find you", "media_type": "video", "src": extract_youtube_id("https://youtu.be/gktCjHgb8qA"), "category": "latest_visuals"},
+    {"title": "Pushing", "media_type": "video", "src": extract_youtube_id("https://youtu.be/3S-OZ9_6kgE"), "category": "latest_visuals"},
     # Solo Acoustic (solo_acoustic)
     {"title": "The Blower's Daughter", "media_type": "video", "src": extract_youtube_id("https://youtu.be/LVjWiR6wQBY"), "category": "solo_acoustic"},
     {"title": "Hallelujah Live Acoustic", "media_type": "video", "src": extract_youtube_id("https://youtu.be/vs2h3rUioLA"), "category": "solo_acoustic"},
@@ -70,15 +68,15 @@ DEFAULT_GALLERY_ITEMS = [
 
 
 def init_db():
-    conn = sqlite3.connect(DB_NAME)
+    conn = get_connection()
     conn.execute("""
         CREATE TABLE IF NOT EXISTS gallery_items(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             title TEXT NOT NULL,
             media_type TEXT NOT NULL DEFAULT 'image',
             src TEXT NOT NULL,
             category TEXT DEFAULT 'general',
-            created_at TEXT DEFAULT (datetime('now'))
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
     # Seed default items only when the table is empty
@@ -88,7 +86,7 @@ def init_db():
     if count == 0:
         for item in DEFAULT_GALLERY_ITEMS:
             cursor.execute(
-                "INSERT INTO gallery_items(title, media_type, src, category) VALUES (?, ?, ?, ?)",
+                "INSERT INTO gallery_items(title, media_type, src, category) VALUES (%s, %s, %s, %s)",
                 (item["title"], item["media_type"], item["src"], item["category"]),
             )
         conn.commit()
@@ -112,8 +110,8 @@ class GalleryState(rx.State):
 
     @rx.var
     def artist_videos(self) -> list[dict]:
-        """Return only items with category 'latest_visuals'."""
-        return [item for item in self.items if item.get("category") == "latest_visuals"]
+        """Return only items with category 'latest_visuals' and media_type 'video'."""
+        return [item for item in self.items if item.get("category") == "latest_visuals" and item.get("media_type") == "video"]
 
     @rx.var
     def solo_acoustic_videos(self) -> list[dict]:
@@ -147,9 +145,8 @@ class GalleryState(rx.State):
 
     @rx.event
     def load_items(self):
-        conn = sqlite3.connect(DB_NAME)
-        conn.row_factory = sqlite3.Row
-        cur = conn.cursor()
+        conn = get_connection()
+        cur = conn.cursor(row_factory=dict_row)
         cur.execute("SELECT * FROM gallery_items ORDER BY id DESC")
         rows = [dict(r) for r in cur.fetchall()]
         conn.close()
@@ -177,9 +174,9 @@ class GalleryState(rx.State):
             return
         # Auto-extract YouTube ID if a URL was provided
         clean_src = extract_youtube_id(self.src.strip())
-        conn = sqlite3.connect(DB_NAME)
+        conn = get_connection()
         conn.execute(
-            "INSERT INTO gallery_items(title, media_type, src, category) VALUES(?, ?, ?, ?)",
+            "INSERT INTO gallery_items(title, media_type, src, category) VALUES(%s, %s, %s, %s)",
             (self.title.strip(), self.media_type, clean_src, self.category.strip()),
         )
         conn.commit()
@@ -213,10 +210,10 @@ class GalleryState(rx.State):
     def save_edit(self):
         if self.editing_id is None:
             return
-        conn = sqlite3.connect(DB_NAME)
+        conn = get_connection()
         conn.execute(
-            "UPDATE gallery_items SET title=?, media_type=?, src=?, category=? WHERE id=?",
-            (self.title.strip(), self.media_type, self.src.strip(), self.category.strip(), self.editing_id),
+            "UPDATE gallery_items SET title=%s, media_type=%s, src=%s, category=%s WHERE id=%s",
+            (self.title.strip(), self.media_type, extract_youtube_id(self.src), self.category.strip(), self.editing_id),
         )
         conn.commit()
         conn.close()
@@ -225,8 +222,8 @@ class GalleryState(rx.State):
 
     @rx.event
     def delete_item(self, item_id: int):
-        conn = sqlite3.connect(DB_NAME)
-        conn.execute("DELETE FROM gallery_items WHERE id=?", (item_id,))
+        conn = get_connection()
+        conn.execute("DELETE FROM gallery_items WHERE id=%s", (item_id,))
         conn.commit()
         conn.close()
         self.load_items()

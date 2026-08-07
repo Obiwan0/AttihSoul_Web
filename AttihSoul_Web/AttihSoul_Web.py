@@ -6,6 +6,7 @@ from .pages.performer import performer_page
 from .pages.about import about_page
 from .pages.services import services_page
 from .pages.blog import blog_page
+from .pages.setlist import setlist_page
 from .pages.admin import admin_page
 from .pages.contact import contact_page
 
@@ -44,6 +45,11 @@ app.add_page(
     blog_page,
     route="/blog",
     title="Blog – Attih Soul",
+)
+app.add_page(
+    setlist_page,
+    route="/setlist",
+    title="Setlist – Attih Soul",
 )
 app.add_page(
     contact_page,

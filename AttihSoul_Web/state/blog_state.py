@@ -1,21 +1,17 @@
-import sqlite3
-from pathlib import Path
 import reflex as rx
+from psycopg.rows import dict_row
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-DB_NAME = BASE_DIR / "database" / "blog.db"
-
+from ..database.postgres import get_connection
 
 # Canonical schema for the blog_posts table (order matters for CREATE TABLE).
 BLOG_SCHEMA = [
-    ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
+    ("id", "SERIAL PRIMARY KEY"),
     ("title", "TEXT NOT NULL"),
     ("content", "TEXT NOT NULL"),
     ("category", "TEXT DEFAULT 'general'"),
     ("status", "TEXT DEFAULT 'draft'"),
     ("featured_image", "TEXT DEFAULT ''"),
-    ("created_at", "TEXT DEFAULT (datetime('now'))"),
+    ("created_at", "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"),
 ]
 
 # Defaults used to backfill pre-existing rows for columns added via migration.
@@ -29,8 +25,14 @@ BACKFILL_DEFAULTS = {
 def _table_columns(conn) -> set[str]:
     """Return the set of column names currently present in blog_posts."""
     cur = conn.cursor()
-    cur.execute("PRAGMA table_info(blog_posts)")
-    return {row[1] for row in cur.fetchall()}
+    cur.execute(
+        """
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_name = 'blog_posts'
+        """
+    )
+    return {row[0] for row in cur.fetchall()}
 
 
 def init_db():
@@ -41,7 +43,7 @@ def init_db():
       * Only adds columns that are missing.
       * Backfills sensible defaults for pre-existing rows.
     """
-    conn = sqlite3.connect(DB_NAME)
+    conn = get_connection()
     try:
         # 1. Create the table with the full canonical schema if it doesn't exist.
         cols_sql = ", ".join(f"{name} {ctype}" for name, ctype in BLOG_SCHEMA)
@@ -52,22 +54,17 @@ def init_db():
         for name, ctype in BLOG_SCHEMA:
             if name in existing:
                 continue
-            # SQLite ALTER TABLE ADD COLUMN cannot use a non-constant default
-            # (e.g. datetime('now')), so created_at is added without a default
-            # and backfilled below.
-            if name == "created_at":
-                conn.execute(f"ALTER TABLE blog_posts ADD COLUMN {name} TEXT")
-            else:
-                conn.execute(f"ALTER TABLE blog_posts ADD COLUMN {name} {ctype}")
+            # PostgreSQL ALTER TABLE ADD COLUMN IF NOT EXISTS is safe.
+            conn.execute(f"ALTER TABLE blog_posts ADD COLUMN IF NOT EXISTS {name} {ctype}")
 
         # 3. Backfill defaults for pre-existing rows that are still NULL.
         for col, default in BACKFILL_DEFAULTS.items():
             conn.execute(
-                f"UPDATE blog_posts SET {col} = ? WHERE {col} IS NULL",
+                f"UPDATE blog_posts SET {col} = %s WHERE {col} IS NULL",
                 (default,),
             )
         conn.execute(
-            "UPDATE blog_posts SET created_at = datetime('now') WHERE created_at IS NULL"
+            "UPDATE blog_posts SET created_at = CURRENT_TIMESTAMP WHERE created_at IS NULL"
         )
 
         conn.commit()
@@ -111,9 +108,8 @@ class BlogState(rx.State):
 
     @rx.event
     def load_posts(self):
-        conn = sqlite3.connect(DB_NAME)
-        conn.row_factory = sqlite3.Row
-        cur = conn.cursor()
+        conn = get_connection()
+        cur = conn.cursor(row_factory=dict_row)
         cur.execute("SELECT * FROM blog_posts ORDER BY id DESC")
         self.posts = [dict(r) for r in cur.fetchall()]
         conn.close()
@@ -122,10 +118,10 @@ class BlogState(rx.State):
     def publish_post(self):
         if not self.title.strip() or not self.content.strip():
             return
-        conn = sqlite3.connect(DB_NAME)
+        conn = get_connection()
         conn.execute(
             "INSERT INTO blog_posts(title, content, category, status, featured_image, created_at) "
-            "VALUES(?, ?, ?, ?, ?, datetime('now'))",
+            "VALUES(%s, %s, %s, %s, %s, CURRENT_TIMESTAMP)",
             (
                 self.title.strip(),
                 self.content.strip(),
@@ -168,9 +164,9 @@ class BlogState(rx.State):
     def save_edit(self):
         if self.editing_id is None:
             return
-        conn = sqlite3.connect(DB_NAME)
+        conn = get_connection()
         conn.execute(
-            "UPDATE blog_posts SET title=?, content=?, category=?, status=?, featured_image=? WHERE id=?",
+            "UPDATE blog_posts SET title=%s, content=%s, category=%s, status=%s, featured_image=%s WHERE id=%s",
             (
                 self.title.strip(),
                 self.content.strip(),
@@ -187,8 +183,8 @@ class BlogState(rx.State):
 
     @rx.event
     def delete_post(self, post_id: int):
-        conn = sqlite3.connect(DB_NAME)
-        conn.execute("DELETE FROM blog_posts WHERE id=?", (post_id,))
+        conn = get_connection()
+        conn.execute("DELETE FROM blog_posts WHERE id=%s", (post_id,))
         conn.commit()
         conn.close()
         self.load_posts()
