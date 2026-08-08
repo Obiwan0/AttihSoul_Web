@@ -17,4 +17,7 @@ def get_connection():
         raise RuntimeError(
             "DATABASE_URL is not set. Add it to the .env file at the project root."
         )
+
+    database_url = database_url.strip()
+
     return psycopg.connect(database_url)
