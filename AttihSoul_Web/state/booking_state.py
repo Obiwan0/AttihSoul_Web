@@ -111,6 +111,24 @@ class BookingState(rx.State):
         )
         conn.commit()
         conn.close()
+
+        # Notify info@attihsoul.com about the new booking. The row is already
+        # committed; a failed email must never break the post-submit flow, so
+        # send_booking_notification swallows all errors internally.
+        from ..database.notifications import send_booking_notification
+
+        send_booking_notification(
+            {
+                "name": self.name.strip(),
+                "email": self.email.strip(),
+                "phone": self.phone.strip(),
+                "event_type": self.event_type.strip(),
+                "event_date": self.event_date.strip(),
+                "location": self.location.strip(),
+                "message": self.message.strip(),
+            }
+        )
+
         self.name = ""
         self.email = ""
         self.phone = ""

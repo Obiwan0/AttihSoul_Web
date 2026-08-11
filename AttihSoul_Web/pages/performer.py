@@ -160,15 +160,57 @@ def performer_page():
             rx.flex(
                 rx.vstack(
                     rx.text("LIVE PERFORMER", color=GOLD),
-                    rx.heading(
-                        "Unforgettable Live Performances", 
-                        color=TEXT_WHITE, 
-                        font_size=bp(initial="1.8rem", sm="2.7rem", md="4rem", lg="5rem"), 
-                        line_height="1.1",
-                        text_align="center"
+                    rx.cond(
+                        SettingsState.performer_heading != "",
+                        rx.heading(
+                            SettingsState.performer_heading,
+                            color=TEXT_WHITE,
+                            font_size=bp(initial="1.8rem", sm="2.7rem", md="4rem", lg="5rem"),
+                            line_height="1.1",
+                            text_align="center",
+                        ),
+                        rx.heading(
+                            "Unforgettable Live Performances",
+                            color=TEXT_WHITE,
+                            font_size=bp(initial="1.8rem", sm="2.7rem", md="4rem", lg="5rem"),
+                            line_height="1.1",
+                            text_align="center",
+                        ),
                     ),
-                    rx.text("Soul • Jazz • Funk • Acoustic", color=GOLD, font_size=bp(initial="0.9rem", md="1rem"), letter_spacing="4px"),
-                    rx.text("From intimate weddings to international stages, every performance is crafted to leave a lasting memory.", color=TEXT_GRAY, width="100%", max_width="720px", padding_x=bp(initial="1rem", md="0"), text_align="center"),
+                    rx.cond(
+                        SettingsState.performer_subtitle != "",
+                        rx.text(
+                            SettingsState.performer_subtitle,
+                            color=GOLD,
+                            font_size=bp(initial="0.9rem", md="1rem"),
+                            letter_spacing="4px",
+                        ),
+                        rx.text(
+                            "Soul • Jazz • Funk • Acoustic",
+                            color=GOLD,
+                            font_size=bp(initial="0.9rem", md="1rem"),
+                            letter_spacing="4px",
+                        ),
+                    ),
+                    rx.cond(
+                        SettingsState.performer_description != "",
+                        rx.text(
+                            SettingsState.performer_description,
+                            color=TEXT_GRAY,
+                            width="100%",
+                            max_width="720px",
+                            padding_x=bp(initial="1rem", md="0"),
+                            text_align="center",
+                        ),
+                        rx.text(
+                            "From intimate weddings to international stages, every performance is crafted to leave a lasting memory.",
+                            color=TEXT_GRAY,
+                            width="100%",
+                            max_width="720px",
+                            padding_x=bp(initial="1rem", md="0"),
+                            text_align="center",
+                        ),
+                    ),
                     
                     # Single Hero CTA
                     rx.link(

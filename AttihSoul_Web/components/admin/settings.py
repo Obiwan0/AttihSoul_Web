@@ -73,6 +73,75 @@ def settings_page():
             border="1px solid #333333",
             border_radius="8px",
         ),
+        # About Page
+        rx.box(
+            rx.heading("About Page", color=GOLD, size="4"),
+            setting_field(
+                "About Intro Text",
+                SettingsState.about_intro,
+                SettingsState.set_about_intro,
+                "Barcelona based Soul and R&B Artist available for bookings for Concerts, Festivals, Weddings, Galas and Parties worldwide",
+                is_textarea=True,
+            ),
+            spacing="2",
+            width="100%",
+            padding="20px",
+            background="#111111",
+            border="1px solid #333333",
+            border_radius="8px",
+        ),
+        # Performer Page
+        rx.box(
+            rx.heading("Performer Page", color=GOLD, size="4"),
+            setting_field(
+                "Hero Heading",
+                SettingsState.performer_heading,
+                SettingsState.set_performer_heading,
+                "Unforgettable Live Performances",
+            ),
+            setting_field(
+                "Hero Subtitle",
+                SettingsState.performer_subtitle,
+                SettingsState.set_performer_subtitle,
+                "Soul • Jazz • Funk • Acoustic",
+            ),
+            setting_field(
+                "Hero Description",
+                SettingsState.performer_description,
+                SettingsState.set_performer_description,
+                "From intimate weddings to international stages, every performance is crafted to leave a lasting memory.",
+                is_textarea=True,
+            ),
+            spacing="2",
+            width="100%",
+            padding="20px",
+            background="#111111",
+            border="1px solid #333333",
+            border_radius="8px",
+        ),
+        # Services Page
+        rx.box(
+            rx.heading("Services Page", color=GOLD, size="4"),
+            setting_field(
+                "Hero Title",
+                SettingsState.services_hero_title,
+                SettingsState.set_services_hero_title,
+                "Music for Concerts, Festivals and Events",
+            ),
+            setting_field(
+                "Hero Intro",
+                SettingsState.services_hero_intro,
+                SettingsState.set_services_hero_intro,
+                "Attih Soul is a brand synonymous with musical excellence, and its essence is captured in the services rendered.",
+                is_textarea=True,
+            ),
+            spacing="2",
+            width="100%",
+            padding="20px",
+            background="#111111",
+            border="1px solid #333333",
+            border_radius="8px",
+        ),
         # SEO
         rx.box(
             rx.heading("SEO Settings", color=GOLD, size="4"),

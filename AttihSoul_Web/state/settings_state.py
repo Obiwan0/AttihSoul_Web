@@ -27,6 +27,12 @@ def init_db():
         "hero_subtitle": "Soul • R&B • Afro • Acoustic",
         "seo_description": "Attih Soul is an international soul and R&B artist based in Barcelona, available for concerts, festivals, weddings, and private events worldwide.",
         "seo_keywords": "Attih Soul, soul artist, R&B, Barcelona, live performer, wedding singer, corporate events",
+        "about_intro": "Barcelona based Soul and R&B Artist available for bookings for Concerts, Festivals, Weddings, Galas and Parties worldwide",
+        "performer_heading": "Unforgettable Live Performances",
+        "performer_subtitle": "Soul • Jazz • Funk • Acoustic",
+        "performer_description": "From intimate weddings to international stages, every performance is crafted to leave a lasting memory.",
+        "services_hero_title": "Music for Concerts, Festivals and Events",
+        "services_hero_intro": "Attih Soul is a brand synonymous with musical excellence, and its essence is captured in the services rendered.",
     }
     for k, v in defaults.items():
         conn.execute(
@@ -57,6 +63,12 @@ class SettingsState(rx.State):
     hero_subtitle: str = ""
     seo_description: str = ""
     seo_keywords: str = ""
+    about_intro: str = ""
+    performer_heading: str = ""
+    performer_subtitle: str = ""
+    performer_description: str = ""
+    services_hero_title: str = ""
+    services_hero_intro: str = ""
 
     saved: bool = False
 
@@ -80,6 +92,12 @@ class SettingsState(rx.State):
         self.hero_subtitle = self.settings.get("hero_subtitle", "")
         self.seo_description = self.settings.get("seo_description", "")
         self.seo_keywords = self.settings.get("seo_keywords", "")
+        self.about_intro = self.settings.get("about_intro", "")
+        self.performer_heading = self.settings.get("performer_heading", "")
+        self.performer_subtitle = self.settings.get("performer_subtitle", "")
+        self.performer_description = self.settings.get("performer_description", "")
+        self.services_hero_title = self.settings.get("services_hero_title", "")
+        self.services_hero_intro = self.settings.get("services_hero_intro", "")
 
     def _save_setting(self, key: str, value: str):
         conn = get_connection()
@@ -139,6 +157,30 @@ class SettingsState(rx.State):
         self.seo_keywords = value
 
     @rx.event
+    def set_about_intro(self, value: str):
+        self.about_intro = value
+
+    @rx.event
+    def set_performer_heading(self, value: str):
+        self.performer_heading = value
+
+    @rx.event
+    def set_performer_subtitle(self, value: str):
+        self.performer_subtitle = value
+
+    @rx.event
+    def set_performer_description(self, value: str):
+        self.performer_description = value
+
+    @rx.event
+    def set_services_hero_title(self, value: str):
+        self.services_hero_title = value
+
+    @rx.event
+    def set_services_hero_intro(self, value: str):
+        self.services_hero_intro = value
+
+    @rx.event
     def save_settings(self):
         self._save_setting("instagram", self.instagram)
         self._save_setting("youtube", self.youtube)
@@ -152,5 +194,11 @@ class SettingsState(rx.State):
         self._save_setting("hero_subtitle", self.hero_subtitle)
         self._save_setting("seo_description", self.seo_description)
         self._save_setting("seo_keywords", self.seo_keywords)
+        self._save_setting("about_intro", self.about_intro)
+        self._save_setting("performer_heading", self.performer_heading)
+        self._save_setting("performer_subtitle", self.performer_subtitle)
+        self._save_setting("performer_description", self.performer_description)
+        self._save_setting("services_hero_title", self.services_hero_title)
+        self._save_setting("services_hero_intro", self.services_hero_intro)
         self.saved = True
         self.load_settings()

@@ -187,6 +187,14 @@ def homepage() -> rx.Component:
         brand_logo(),
         rx.box(center_badge(), display=bp(initial="none", md="block")),
         rx.box(
+            explore_button("BOOK / CONTACT", "/contact"),
+            position="absolute",
+            bottom=bp(initial="4rem", md="6rem"),
+            left="50%",
+            transform="translateX(-50%)",
+            z_index="40",
+        ),
+        rx.box(
             rx.text("TWO SIDES, ONE VOICE.", color="white", font_size=bp(initial="10px", md="1rem"),
                     font_weight="600", letter_spacing="0.15em"),
             position="absolute",

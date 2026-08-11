@@ -100,6 +100,10 @@ def footer():
                     footer_link("Instagram", SettingsState.settings.get("instagram", "https://instagram.com")),
                     footer_link("YouTube", SettingsState.settings.get("youtube", "https://youtube.com")),
                     footer_link("Spotify", SettingsState.settings.get("spotify", "https://open.spotify.com")),
+                    footer_link(
+                        "VEVO",
+                        "https://youtube.com/@attihsoulvevo200?si=zPlwBTiER-7TJ5Oe",
+                    ),
                     footer_link("Contact", "/contact"),
 
                     spacing="2",

@@ -1,6 +1,7 @@
 import reflex as rx
 from .navbar import navbar
 from ..components.footer import footer
+from ..state.settings_state import SettingsState
 
 # ============ THEME (self-contained) ============
 GOLD = "#d4a85a"
@@ -86,20 +87,41 @@ def services_page() -> rx.Component:
             rx.center(
                 rx.vstack(
                     rx.text("SERVICES", color=GOLD, font_size="0.9rem", letter_spacing="4px", font_weight="500"),
-                    rx.heading(
-                        "Music for Concerts, Festivals and Events",
-                        font_size=bp(initial="2.4rem", md="4rem", lg="4.6rem"),
-                        font_weight="700",
-                        color=TEXT_WHITE,
-                        text_align="center",
-                        line_height="1.05",
+                    rx.cond(
+                        SettingsState.services_hero_title != "",
+                        rx.heading(
+                            SettingsState.services_hero_title,
+                            font_size=bp(initial="2.4rem", md="4rem", lg="4.6rem"),
+                            font_weight="700",
+                            color=TEXT_WHITE,
+                            text_align="center",
+                            line_height="1.05",
+                        ),
+                        rx.heading(
+                            "Music for Concerts, Festivals and Events",
+                            font_size=bp(initial="2.4rem", md="4rem", lg="4.6rem"),
+                            font_weight="700",
+                            color=TEXT_WHITE,
+                            text_align="center",
+                            line_height="1.05",
+                        ),
                     ),
-                    rx.text(
-                        "Attih Soul is a brand synonymous with musical excellence, and its essence is captured in the services rendered.",
-                        color=TEXT_WHITE,
-                        font_size=bp(initial="1rem", md="1.15rem"),
-                        text_align="center",
-                        max_width="620px",
+                    rx.cond(
+                        SettingsState.services_hero_intro != "",
+                        rx.text(
+                            SettingsState.services_hero_intro,
+                            color=TEXT_WHITE,
+                            font_size=bp(initial="1rem", md="1.15rem"),
+                            text_align="center",
+                            max_width="620px",
+                        ),
+                        rx.text(
+                            "Attih Soul is a brand synonymous with musical excellence, and its essence is captured in the services rendered.",
+                            color=TEXT_WHITE,
+                            font_size=bp(initial="1rem", md="1.15rem"),
+                            text_align="center",
+                            max_width="620px",
+                        ),
                     ),
                     rx.box(height="1.5rem"),
                     gold_button("BOOK ATTIH SOUL", "/contact"),
@@ -288,4 +310,5 @@ def services_page() -> rx.Component:
 
         # FOOTER
         footer(),
+        on_mount=SettingsState.load_settings,
     )

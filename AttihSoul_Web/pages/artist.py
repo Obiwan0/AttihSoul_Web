@@ -137,13 +137,13 @@ def artist_page():
                 rx.vstack(
                     rx.heading("Discography", color=TEXT_WHITE, width="100%", text_align=bp(initial="center", md="left")),
                     rx.grid(
-                        music_card("All In My Head", "2025", "/album cover/Ph-29.jpg", "https://distrokid.com/hyperfollow/attihsoul/all-in-my-head-2"),
-                        music_card("Dreams (Choir Version)", "2025", "/album cover/card 1.jpg", "https://distrokid.com/hyperfollow/attihsoul/dreams-choir-version"),
-                        music_card("Good Old Days", "2025", "/album cover/card 2.jpg", "https://distrokid.com/hyperfollow/attihsoul/good-old-days-choir-version"),
-                        music_card("Healed Too Much", "2025", "/album cover/card 3.jpg", "https://distrokid.com/hyperfollow/attihsoul/healed-too-much-choir-version"),
-                        music_card("Shades of Emotions", "2025", "/album cover/card 4.jpg", "https://distrokid.com/hyperfollow/attihsoul/shades-of-emotions-2"),
+                        music_card("All In My Head", "2026", "/album cover/Ph-29.jpg", "https://distrokid.com/hyperfollow/attihsoul/all-in-my-head-2"),
+                        music_card("Dreams (Choir Version)", "2024", "/album cover/card 1.jpg", "https://distrokid.com/hyperfollow/attihsoul/dreams-choir-version"),
+                        music_card("Good Old Days", "2024", "/album cover/card 2.jpg", "https://distrokid.com/hyperfollow/attihsoul/good-old-days-choir-version"),
+                        music_card("Healed Too Much", "2024", "/album cover/card 3.jpg", "https://distrokid.com/hyperfollow/attihsoul/healed-too-much-choir-version"),
+                        music_card("Shades of Emotions", "2023(Album)", "/album cover/card 4.jpg", "https://distrokid.com/hyperfollow/attihsoul/shades-of-emotions-2"),
                         music_card("The Acoustic Experiment", "2024", "/album cover/card 5.jpg", "https://distrokid.com/hyperfollow/attihsoul/the-acoustic-experiment"),
-                        music_card("Kiss Ya (Live)", "2024", "/album cover/card 6.jpg", "https://distrokid.com/hyperfollow/attihsoul/kiss-ya-live-at-estudio-tanger-barcelona"),
+                        music_card("Kiss Ya (Live)", "2026", "/album cover/card 6.jpg", "https://distrokid.com/hyperfollow/attihsoul/kiss-ya-live-at-estudio-tanger-barcelona"),
                         columns=bp(initial="1", sm="2", md="3", lg="4"), spacing="6", width="100%", justify_items="center", align_items="stretch",
                     ),
                     # FEATURED VISUALS

@@ -1,4 +1,5 @@
 import reflex as rx
+from ..state.settings_state import SettingsState
 from .navbar import navbar
 
 # ============ THEME (self-contained) ============
@@ -114,12 +115,22 @@ def about_page() -> rx.Component:
                         text_align="center",
                         line_height="1.05",
                     ),
-                    rx.text(
-                        "Barcelona based Soul and R&B Artist available for bookings for Concerts, Festivals, Weddings, Galas and Parties worldwide",
-                        color=TEXT_WHITE,
-                        font_size=bp(initial="1rem", md="1.15rem"),
-                        text_align="center",
-                        max_width="620px",
+                    rx.cond(
+                        SettingsState.about_intro != "",
+                        rx.text(
+                            SettingsState.about_intro,
+                            color=TEXT_WHITE,
+                            font_size=bp(initial="1rem", md="1.15rem"),
+                            text_align="center",
+                            max_width="620px",
+                        ),
+                        rx.text(
+                            "Barcelona based Soul and R&B Artist available for bookings for Concerts, Festivals, Weddings, Galas and Parties worldwide",
+                            color=TEXT_WHITE,
+                            font_size=bp(initial="1rem", md="1.15rem"),
+                            text_align="center",
+                            max_width="620px",
+                        ),
                     ),
                     rx.box(height="1.5rem"),
                     gold_button("BOOK ATTIH SOUL", "/contact"),
@@ -265,4 +276,5 @@ def about_page() -> rx.Component:
             rx.text("TWO SIDES. ONE VOICE.", color=TEXT_WHITE, font_size="0.75rem", letter_spacing="0.15em"),
             padding="2rem", text_align="center", border_top="1px solid #222", background=DARK_BG,
         ),
+        on_mount=SettingsState.load_settings,
     )
