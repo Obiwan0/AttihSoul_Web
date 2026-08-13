@@ -210,43 +210,6 @@ def about_page() -> rx.Component:
             padding="5rem 3rem", background="#0f0f0f",
         ),
 
-        # HIGHLIGHTS
-        rx.box(
-            rx.vstack(
-                rx.text("HIGHLIGHTS", color=GOLD, font_size="0.85rem", letter_spacing="3px"),
-                rx.heading("A Legacy of Excellence", color=TEXT_WHITE, font_size="2.4rem", font_weight="600"),
-                rx.box(height="2rem"),
-                rx.grid(
-                    rx.box(
-                        rx.vstack(
-                            rx.text("Winner", color=GOLD, font_size="1.1rem", font_weight="600"),
-                            rx.text("Road to Yalta International Music Festival", color=TEXT_WHITE, font_size="1rem"),
-                            spacing="2",
-                        ),
-                        bg=CARD_BG, padding="1.75rem", border_radius="12px",
-                    ),
-                    rx.box(
-                        rx.vstack(
-                            rx.text("Official Theme", color=GOLD, font_size="1.1rem", font_weight="600"),
-                            rx.text("Nigeria’s Democracy Day Theme Song", color=TEXT_WHITE, font_size="1rem"),
-                            spacing="2",
-                        ),
-                        bg=CARD_BG, padding="1.75rem", border_radius="12px",
-                    ),
-                    rx.box(
-                        rx.vstack(
-                            rx.text("High-Profile Performances", color=GOLD, font_size="1.1rem", font_weight="600"),
-                            rx.text("FC Barcelona Star Lamine Yamal", color=TEXT_WHITE, font_size="1rem"),
-                            spacing="2",
-                        ),
-                        bg=CARD_BG, padding="1.75rem", border_radius="12px",
-                    ),
-                    columns={"base": "1", "md": "3"}, spacing="6", width="100%",
-                ),
-                spacing="4", align_items="start",
-            ),
-            padding="5rem 3rem", background="#0f0f0f",
-        ),
 
         
         rx.box(
