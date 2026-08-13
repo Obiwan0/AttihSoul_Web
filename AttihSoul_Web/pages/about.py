@@ -150,31 +150,64 @@ def about_page() -> rx.Component:
             overflow="hidden",
         ),
 
-        social_icons(),
-        brand_logo(),
-
         # BIOGRAPHY
         rx.box(
             rx.vstack(
                 rx.text("BIOGRAPHY", color=GOLD, font_size="0.85rem", letter_spacing="3px"),
-                rx.heading("About ATTIH SOUL", color=TEXT_WHITE, font_size="2.6rem", font_weight="700", line_height="1.1"),
+                rx.heading("ABOUT ATTIH SOUL", color=TEXT_WHITE, font_size="2.6rem", font_weight="700", line_height="1.1"),
+                rx.text("Soul. Story. Connection.", color=TEXT_WHITE, font_size="1.25rem", font_weight="500"),
                 rx.text(
-                    "Attih Soul is an international soul and R&B artist known for his powerful vocals, "
-                    "emotional storytelling, and exceptional live performances. Blending classic soul with "
-                    "contemporary R&B, he creates unforgettable musical experiences for audiences at weddings, "
-                    "corporate events, private functions, and concerts across Europe and beyond.",
+                    "Attih Soul is a Barcelona-based Soul & R&B artist, songwriter and live performer known for powerful vocals, emotional storytelling and sophisticated live entertainment.",
                     color=TEXT_GRAY, font_size="1.05rem", line_height="1.7", max_width="720px",
                 ),
                 rx.text(
-                    "Originally from Nigeria and now based in Barcelona, Attih Soul has built a strong global "
-                    "presence as a professional live performer. He is a winner of the Road to Yalta International "
-                    "Music Festival and the creator of Nigeria’s official Democracy Day theme song — milestones that "
-                    "highlight both his artistic excellence and international recognition.",
+                    "Blending the warmth of classic soul with contemporary R&B, his music and performances are built around one thing: creating a genuine connection with the audience.",
+                    color=TEXT_GRAY, font_size="1.05rem", line_height="1.7", max_width="720px",
+                ),
+                rx.text(
+                    "Originally from Nigeria and now based in Barcelona, Attih Soul performs across Europe and internationally, bringing his distinctive sound to concerts, music festivals, weddings, luxury events and private celebrations.",
                     color=TEXT_GRAY, font_size="1.05rem", line_height="1.7", max_width="720px",
                 ),
                 spacing="5", align_items="start",
             ),
             padding="5rem 3rem", background=DARK_BG,
+        ),
+
+        # CAREER HIGHLIGHTS
+        rx.box(
+            rx.vstack(
+                rx.text("CAREER HIGHLIGHTS", color=GOLD, font_size="0.85rem", letter_spacing="3px"),
+                rx.box(height="2rem"),
+                rx.grid(
+                    rx.box(
+                        rx.vstack(
+                            rx.text("Road to Yalta International Music Festival", color=GOLD, font_size="1.1rem", font_weight="600"),
+                            rx.text("Award for Outstanding Stage Performance", color=TEXT_WHITE, font_size="1rem"),
+                            spacing="2",
+                        ),
+                        bg=CARD_BG, padding="1.75rem", border_radius="12px",
+                    ),
+                    rx.box(
+                        rx.vstack(
+                            rx.text("National Recognition", color=GOLD, font_size="1.1rem", font_weight="600"),
+                            rx.text("Creator of Nigeria's Democracy Day Theme Song (2017)", color=TEXT_WHITE, font_size="1rem"),
+                            spacing="2",
+                        ),
+                        bg=CARD_BG, padding="1.75rem", border_radius="12px",
+                    ),
+                    rx.box(
+                        rx.vstack(
+                            rx.text("High-Profile Performances", color=GOLD, font_size="1.1rem", font_weight="600"),
+                            rx.text("For elite clients and audiences, including FC Barcelona star Lamine Yamal.", color=TEXT_WHITE, font_size="1rem"),
+                            spacing="2",
+                        ),
+                        bg=CARD_BG, padding="1.75rem", border_radius="12px",
+                    ),
+                    columns={"base": "1", "md": "3"}, spacing="6", width="100%",
+                ),
+                spacing="4", align_items="start",
+            ),
+            padding="5rem 3rem", background="#0f0f0f",
         ),
 
         # HIGHLIGHTS
@@ -202,7 +235,7 @@ def about_page() -> rx.Component:
                     ),
                     rx.box(
                         rx.vstack(
-                            rx.text("Endorsed By", color=GOLD, font_size="1.1rem", font_weight="600"),
+                            rx.text("High-Profile Performances", color=GOLD, font_size="1.1rem", font_weight="600"),
                             rx.text("FC Barcelona Star Lamine Yamal", color=TEXT_WHITE, font_size="1rem"),
                             spacing="2",
                         ),
@@ -215,14 +248,13 @@ def about_page() -> rx.Component:
             padding="5rem 3rem", background="#0f0f0f",
         ),
 
-        # HIGH-PROFILE ENDORSEMENT
+        
         rx.box(
             rx.vstack(
-                rx.heading("High-Profile Endorsement", color=TEXT_WHITE, font_size="2.4rem", font_weight="600"),
+                rx.heading("", color=TEXT_WHITE, font_size="2.4rem", font_weight="600"),
                 rx.text(
-                    "He has performed for high-profile audiences, including FC Barcelona star Lamine Yamal, "
-                    "who rehired him following an outstanding performance — an endorsement that reflects his consistency, "
-                    "professionalism, and impact.",
+                    " "
+                    " ",
                     color=TEXT_GRAY, font_size="1.05rem", max_width="620px",
                 ),
                 rx.box(height="1.5rem"),
