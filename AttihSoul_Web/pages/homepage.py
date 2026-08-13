@@ -118,7 +118,6 @@ def side_panel(title, top_icon, label, features, button_text, video_src, href, d
         rx.center(
             rx.vstack(
                 rx.heading(title, color="white", font_size=bp(initial="24px", md="4rem"), text_align="center"),
-                rx.icon(top_icon, size=32, color=GOLD),
                 rx.text(
                     label,
                     color="white",
@@ -174,7 +173,7 @@ def homepage() -> rx.Component:
                 "mic",
                 "LIVE PERFORMANCES",
                 [("heart", "Weddings"), ("building", "Corporate Events"), ("sparkles", "Private Events")],
-                "BOOK LIVE MUSIC",
+                "EXPLORE MORE",
                 "/performer_bg.mp4",
                 "/performer",
                 "rgba(0,0,0,0.35)",
@@ -186,14 +185,6 @@ def homepage() -> rx.Component:
         social_icons(),
         brand_logo(),
         rx.box(center_badge(), display=bp(initial="none", md="block")),
-        rx.box(
-            explore_button("BOOK / CONTACT", "/contact"),
-            position="absolute",
-            bottom=bp(initial="4rem", md="6rem"),
-            left="50%",
-            transform="translateX(-50%)",
-            z_index="40",
-        ),
         rx.box(
             rx.text("TWO SIDES, ONE VOICE.", color="white", font_size=bp(initial="10px", md="1rem"),
                     font_weight="600", letter_spacing="0.15em"),
